@@ -23,6 +23,7 @@ contract Holon {
         string data;
         uint price;
         uint reputation;
+        DataCategory dataCategory;
         bool exists;
         Stamp[] validations;
         mapping(address => Validator) validators;
@@ -30,6 +31,7 @@ contract Holon {
     
     struct Persona {
         address payable personalAddress;
+        uint pendingDataDeliver;
         bool exists;
         mapping(string => Info) personalInfo;
         
@@ -50,10 +52,13 @@ contract Holon {
     
     enum ValidationChoices { Validated, NotValidated, CannotEvaluate }
     enum ValidationCostStrategy { ForFree, Charged, Rebate }
+    enum DataCategory { PlainText, IPFSHash, URI }
     
-    event ValidateMe(address requester, address validator, string field);
+    event NewData(address persona, DataCategory dataCategory, uint infoCategory, string field);
+    event ValidateMe(address requester, address validator, DataCategory dataCategory, string field, string data);
     event ValidationResult(address persona, address validator, string field, ValidationChoices result);
     event LetMeSeeYourData(address requester, address persona, string field);
+    event DeliverData(bool accepted, address persona, address consumer, DataCategory dataCategory, string field, string data);
     
     mapping(uint => string) public infoCategories;    
     mapping(address => Persona) public members;
@@ -63,25 +68,28 @@ contract Holon {
         
     }
     
-    function addPersona(uint _infoCode, string memory _field, string memory _data, uint _price) 
+    function addPersona(uint _infoCode, DataCategory _dataCategory, string memory _field, string memory _data, uint _price) 
         public
         returns (bool)
     {
         require(_price >= 0, "You must inform correct value");
         Persona storage p = members[msg.sender];
         p.personalAddress = msg.sender;
+        p.pendingDataDeliver = 0;
         p.exists = true;
         
         Info storage i = p.personalInfo[_field];
         i.infoCategoryCode = _infoCode;
+        i.dataCategory = _dataCategory;
         i.field = _field;
         i.data = _data;
         i.price = _price;
         i.exists = true;
+        emit NewData(msg.sender, _dataCategory, _infoCode, _field);
         return true;
     }
     
-    function addData(uint _infoCode, string memory _field, string memory _data, uint _price) 
+    function addData(uint _infoCode, DataCategory _dataCategory, string memory _field, string memory _data, uint _price) 
         public
         returns (bool)
     {
@@ -92,9 +100,11 @@ contract Holon {
         require(!i.exists, "This field is already registered");
         i.infoCategoryCode = _infoCode;
         i.field = _field;
+        i.dataCategory = _dataCategory;
         i.data = _data;
         i.price = _price;
         i.exists = true;
+        emit NewData(msg.sender, _dataCategory, _infoCode, _field);
         return true;
     }
     
@@ -111,7 +121,7 @@ contract Holon {
         return true;
     }
     
-    function addCategory(uint _index, string memory _details) 
+    function addInfoCategory(uint _index, string memory _details) 
         public
         returns (bool)
     {
@@ -120,7 +130,7 @@ contract Holon {
         return true;
     }
     
-    function askToValidate(address _validator, string memory _field) 
+    function askToValidate(address _validator, DataCategory _dataCategory, string memory _field, string memory _data) 
         public
         payable
         returns (bool)
@@ -133,7 +143,7 @@ contract Holon {
             check = false;
         }
         require(check, "You must send a correct value");
-        emit ValidateMe(msg.sender, _validator, _field);
+        emit ValidateMe(msg.sender, _validator, _dataCategory, _field, _data);
         return true;
     }
     
@@ -143,7 +153,9 @@ contract Holon {
         returns (bool)
     {
         Validator memory v = holonValidators[msg.sender];
-        require(correctPrice(v.strategy, msg.value), "You must send a correct value");
+        if (v.strategy == ValidationCostStrategy.Charged) {
+            require(correctPrice(v.strategy, msg.value), "You must send a correct value");
+        }
         bool check = true;
         if (v.strategy == ValidationCostStrategy.Rebate && msg.value<v.price) {
             check = false;
@@ -158,9 +170,9 @@ contract Holon {
         if (_status == ValidationChoices.CannotEvaluate) {
             return true;
         }
-        if (v.strategy == ValidationCostStrategy.Rebate) {
+        if (v.strategy == ValidationCostStrategy.Rebate && msg.value > 0) {
             p.personalAddress.transfer(msg.value);
-        } 
+        }
         if (_status == ValidationChoices.Validated) {
             i.reputation++;
         }
@@ -171,39 +183,56 @@ contract Holon {
     function getPersonaData(address _address, string memory _field)
         public
         view
-        returns (string memory, string memory, uint, uint)
+        returns (string memory, string memory, DataCategory, uint, uint, uint)
     {
         Persona storage p = members[_address];
         Info memory i = p.personalInfo[_field];
-        return (i.field, i.data, i.validations.length, i.price);
+        return (i.field, i.data, i.dataCategory, i.reputation, i.validations.length, i.price);
     }
     
     function getPersonaDataValidatorDetails(address _address, string memory _field, uint validatorIndex)
         public
         view
-        returns (string memory, string memory, uint, address, uint, ValidationChoices, uint, uint)
+        returns (string memory, string memory, DataCategory, uint, uint, address, uint, ValidationChoices, uint, uint)
     {
         Persona storage p = members[_address];
         Info storage i = p.personalInfo[_field];
         Stamp memory s = i.validations[validatorIndex];
         Validator memory v = i.validators[s.validatorAddress];
-        return (i.field, i.data, i.price, v.validatorAddress, v.reputation, s.status, s.whenDate, s.whenBlock);
+        return (i.field, i.data, i.dataCategory, i.reputation, i.price, v.validatorAddress, v.reputation, s.status, s.whenDate, s.whenBlock);
     }
     
-    function askDecryptedPersonaDataValidatorDetails(address _address, string memory _field)
+    function askDecryptedData(address _address, string memory _field)
         public
         payable
-        returns (string memory, string memory, uint)
+        returns (bool)
     {
         Persona storage p = members[_address];
         require(p.exists, "This persona is not registered");
         Info memory i = p.personalInfo[_field];
         require(msg.value >= i.price, "You must pay");
-        if (msg.value > 0) {
-            p.personalAddress.transfer(msg.value);
-        }
+        p.pendingDataDeliver++;
         emit LetMeSeeYourData(msg.sender, _address, _field);
-        return (i.field, i.data, i.validations.length);
+        return true;
+    }
+    
+    function deliverDecryptedData(bool _accept, address payable _address, DataCategory _dataCategory, string memory _field, string memory _data) 
+        public
+        returns (bool)
+    {
+        Persona storage p = members[msg.sender];
+        require(p.exists, "This persona is not registered");
+        Info memory i = p.personalInfo[_field];
+        if (i.price > 0) {
+            if (!_accept) {
+                _address.transfer(i.price);
+            } else {
+                p.personalAddress.transfer(i.price);
+            }
+        }
+        p.pendingDataDeliver--;
+        emit DeliverData(_accept, msg.sender, _address, _dataCategory, _field, _data);
+        return true;
     }
         
 }
