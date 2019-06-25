@@ -22,6 +22,7 @@ contract Holon {
         string field;
         string data;
         uint price;
+        uint reputation;
         bool exists;
         Stamp[] validations;
         mapping(address => Validator) validators;
@@ -160,29 +161,33 @@ contract Holon {
         if (v.strategy == ValidationCostStrategy.Rebate) {
             p.personalAddress.transfer(msg.value);
         } 
+        if (_status == ValidationChoices.Validated) {
+            i.reputation++;
+        }
+        v.reputation++;
         return true;
     }
     
     function getPersonaData(address _address, string memory _field)
         public
         view
-        returns (string memory, string memory, uint)
+        returns (string memory, string memory, uint, uint)
     {
         Persona storage p = members[_address];
         Info memory i = p.personalInfo[_field];
-        return (i.field, i.data, i.validations.length);
+        return (i.field, i.data, i.validations.length, i.price);
     }
     
     function getPersonaDataValidatorDetails(address _address, string memory _field, uint validatorIndex)
         public
         view
-        returns (string memory, string memory, address, uint, ValidationChoices, uint, uint)
+        returns (string memory, string memory, uint, address, uint, ValidationChoices, uint, uint)
     {
         Persona storage p = members[_address];
         Info storage i = p.personalInfo[_field];
         Stamp memory s = i.validations[validatorIndex];
         Validator memory v = i.validators[s.validatorAddress];
-        return (i.field, i.data, v.validatorAddress, v.reputation, s.status, s.whenDate, s.whenBlock);
+        return (i.field, i.data, i.price, v.validatorAddress, v.reputation, s.status, s.whenDate, s.whenBlock);
     }
     
     function askDecryptedPersonaDataValidatorDetails(address _address, string memory _field)
@@ -193,6 +198,10 @@ contract Holon {
         Persona storage p = members[_address];
         require(p.exists, "This persona is not registered");
         Info memory i = p.personalInfo[_field];
+        require(msg.value >= i.price, "You must pay");
+        if (msg.value > 0) {
+            p.personalAddress.transfer(msg.value);
+        }
         emit LetMeSeeYourData(msg.sender, _address, _field);
         return (i.field, i.data, i.validations.length);
     }
