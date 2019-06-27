@@ -11,7 +11,7 @@ Step 1
 addInfoCategory - Insert category for persona data
 -----------------------------------------------------
 Input:  
-* 0 : _index - category id  << 1 >>  
+   *   0 : _index - category id  << 1 >>  
 * 1 : _details - category name << Personal Data >>  
 Return:  
 * 0 : bool << true >>  
