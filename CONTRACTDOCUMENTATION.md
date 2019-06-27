@@ -1,17 +1,16 @@
-------------------------------------
-Create accounts for test in MetaMask
-------------------------------------
+
+# Create accounts for test in MetaMask
+
 * 1 - Account 1 - PersonaValidator  
 * 2 - Account 2 - PersonaOnly  
 * 3 - Account 3 - Consumer  
 
 
-Step 1
------------------------------------------------------
-addInfoCategory - Insert category for persona data
------------------------------------------------------
-Input:
-------
+## Step 1
+
+## addInfoCategory - Insert category for persona data
+
+### Input:
 * 0 : _index - category id  << 1 >>  
 * 1 : _details - category name << Personal Data >>  
 Return:  
