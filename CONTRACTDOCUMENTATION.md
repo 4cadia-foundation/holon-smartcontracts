@@ -6,7 +6,7 @@
 * 3 - Account 3 - Consumer  
 
 
-## Step 1
+## ----- Step 1 -----
 ## addInfoCategory - Insert category for persona data
 ### Input:
 * 0 : _index - category id  << 1 >>  
@@ -16,7 +16,7 @@
 ### Unit Test:  
 * Any account with balance can create a category  
 
-## Step 2  
+## ----- Step 2 ----- 
 ## infoCategories - return Category data  
 ###Input  
 * 0 : uint256: Category id << 1 >>  
@@ -26,27 +26,27 @@
 * 0 : Create a Category with addInfoCategory Method  
 * 1 : Retrieve Category data with Category id      
 
-##Step 3
+## ----- Step 3 -----
 ----------------------------------
 addPersona - Insert Persona / data  
 ----------------------------------
-Step 3.1   
-Premise:  
+## ----- Step 3.1 -----  
+###Premise:  
 * 0 : Use PersonaValidator account  
-Input:  
+###Input:  
 * 0 : _InfoCode - category id << 1 >>  
 * 1 : _dataCategory: DataCategory: enum (0 - PlainText, 1 - IPFSHash, 2 - URI ) << 0 >>  
 * 2 : _field - field name << Email >>  
 * 3 : _data - field value << email_01@email.com >>  
 * 4 : _price (cost for info/data) - 17 positions << 10000000000000000 >>  
-Return:  
+###Return:  
 * 0 : bool  
 * 1 : event: NewData(msg.sender, _dataCategory, _infoCode, _field);  
-Unit Test:  
+###Unit Test:  
 * Any account with balance can create your Persona / Persona data  
 * *addPersona only one address  
 
-Step 3.2  
+## ----- Step 3.2 -----
 Premise:  
 * 0 : Use PersonaOnly account  
 Input:  
