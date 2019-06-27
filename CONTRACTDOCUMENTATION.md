@@ -4,12 +4,10 @@
 * 1 - Account 1 - PersonaValidator  
 * 2 - Account 2 - PersonaOnly  
 * 3 - Account 3 - Consumer  
-
+______________________________________________________
 
 ## ----- Step 1 -----
-______________________________________________________
 ## addInfoCategory - Insert category for persona data
-______________________________________________________
 ### Input:
 * 0 : _index - category id  << 1 >>  
 * 1 : _details - category name << Personal Data >>  
@@ -17,7 +15,7 @@ ______________________________________________________
 * 0 : bool << true >>  
 ### Unit Test:  
 * Any account with balance can create a category  
-
+______________________________________________________
 ## ----- Step 2 ----- 
 ## infoCategories - return Category data  
 ### Input  
@@ -27,7 +25,7 @@ ______________________________________________________
 ### Unit Test:  
 * 0 : Create a Category with addInfoCategory Method  
 * 1 : Retrieve Category data with Category id      
-
+______________________________________________________
 ## ----- Step 3 -----
 ## addPersona - Insert Persona / data  
 ## ----- Step 3.1 -----  
@@ -77,7 +75,7 @@ ______________________________________________________
 ### Unit Test:  
 * Any account with balance can create your Persona / Persona data  
 * * addPersona only one address  
-
+______________________________________________________
 ## ----- Step 4 - Check PersonalValidator data -----  
 ## members - return persona data  
 ### Input:  
@@ -89,7 +87,7 @@ ______________________________________________________
 ### Test      
 * 0 : Create a Persona data with addPersona method  
 * 1 : Provide Persona address  
-
+______________________________________________________
 ## ----- Step 5 - Check PersonalOnly data -----  
 ## members - return persona data  
 ### Input:  
@@ -101,7 +99,7 @@ ______________________________________________________
 ### Test      
 * 0 : Create a Persona data with addPersona method  
 * 1 : Provide Persona address  
-
+______________________________________________________
 ## ----- Step 6 - Check Consumer data ----- 
 ## members - return persona data  
 ### Input:  
@@ -113,8 +111,7 @@ ______________________________________________________
 ### Test      
 * 0 : Create a Persona data with addPersona method  
 * 1 : Provide Persona address  
-
-
+______________________________________________________
 ## ----- step 7 -----  
 ## addData - Insert data for existing Persona  
 ### Input:  
@@ -130,7 +127,7 @@ ______________________________________________________
 * 0 : Add a Persona data with addPersona Method  
 * 1 : Add other Persona data   
 * * Any account with balance can create data for your existing Persona  
-	
+______________________________________________________
 ## ----- Step 8 -----  
 ## getPersonaData - Return Persona data  
 ## ----- Step 8.1 -----  
@@ -147,7 +144,6 @@ ______________________________________________________
 ### Unit Test:  
 * 0 : Create a Persona data with addPersona method  
 * 1 : Retrieve Persona data with same address  
-
 ## ----- Step 8.2 -----  
 ### Input:   
 * 0 : _address - Persona Address << PersonaValidatorOnly address >>  
@@ -162,7 +158,7 @@ ______________________________________________________
 ### Unit Test:  
 * 0 : Create a Persona data with addPersona method  
 * 1 : Retrieve Persona data with same address  
-
+______________________________________________________
 ## ----- Step 9 -----  
 ## AddValidator - Insert validator  
 ### Premise:  
@@ -175,7 +171,7 @@ ______________________________________________________
 ### Unit Test:  
 * 0 : Add a Persona with addPersona Method (Validator must be a Persona)  
 * 1 : Add Validator data (_strategy and _price)  
-
+______________________________________________________
 ## ----- Step 10 -----  
 ## holonValidators - return Validator data  
 ### Input:  
@@ -189,7 +185,7 @@ ______________________________________________________
 ### Unit Test:  
 * 0 : Create a Persona data with addPersona method  
 * 1 : Create a Validator with AddValidator method and same Person address      
-
+______________________________________________________
 ## ----- Step 11 -----  
 ## validate - validation process for Personal data  
 ## ----- Step 11.1 -----  
@@ -203,7 +199,6 @@ ______________________________________________________
 ### Unit Test:  
 * 0 : Create a Persona data with addPersona method  
 * 1 : Set the values (_persona, _field) - use a Persona's address to validate and _status for set result  
-
 ## ----- Step 11.2 -----  
 ### Input:   
 * 0 : _persona: address: Persona address << PersonaOnly address >>  
@@ -215,7 +210,7 @@ ______________________________________________________
 ### Unit Test:  
 * 0 : Create a Persona data with addPersona method  
 * 1 : Set the values (_persona, _field) - use a Persona's address to validate and _status for set result  
-
+______________________________________________________
 ## ----- Step 12 - Check -----  
 ## getPersonaDataValidatorDetails - Return validation details for Persona Data  
 ## ----- Step 12.1 -----  
@@ -236,7 +231,6 @@ ______________________________________________________
 * 0 : Create a Persona data with addPersona method  
 * 1 : Create other Persona data with addPersona method for to be Validator  
 * 2 : Create a Validator with AddValidator method and Validator's address  
-
 ## ----- Step 12.2 -----  
 ### Input:  
 * 0 - _address - Persona Address << PersonaOnly address >>  
@@ -255,12 +249,11 @@ ______________________________________________________
 * 0 : Create a Persona data with addPersona method  
 * 1 : Create other Persona data with addPersona method for to be Validator  
 * 2 : Create a Validator with AddValidator method and Validator's address  
-
+______________________________________________________
 ## ----- Step 13 -----  
 ## askToValidate - request data validation by Validator  
 ### Premises:  
 * 0 : Use PersonalOnly account  
-
 ## ----- Step 13.1 - Validate Email ----- 
 ### Input:  
 * 0 : _validator: address: << PersonalValidator Address >>  
@@ -275,7 +268,6 @@ ______________________________________________________
 * 1 : Create other Persona data with addPersona method for to be Validator  
 * 2 : Create a Validator with AddValidator method and Validator's address  
 * 3 : Set the values of data to be Validated  
-
 ## ----- Step 13.2 - Validate Phone -----  
 ### Input:  
 * 0 : _validator: address: << PersonalValidator Address >>  
@@ -290,7 +282,7 @@ ______________________________________________________
 * 1 : Create other Persona data with addPersona method for to be Validator  
 * 2 : Create a Validator with AddValidator method and Validator's address  
 * 3 : Set the values of data to be Validated  
-
+______________________________________________________
 ## ----- Step 14 -----  
 ## askDecryptedData - request decrypted data from Persona  
 ### Premises:  
@@ -304,12 +296,11 @@ ______________________________________________________
 ### Unit Test:      
 * 0 : Create a Persona data with addPersona method  
 * 1 : Set the values  
-
+______________________________________________________
 ### ----- Step 15 ----- 
 ## deliverDecryptedData - deliver decrypted Persona data to Consumer   
 ### Premises:  
 * 0 : Use PersonaOnly Account  
-
 ### ----- Step 15.1 -----      
 ### Input:  
 * 0 : _accept: bool: accept / rejected << 1 >>  
@@ -325,7 +316,6 @@ ______________________________________________________
 * 1 : Create other Persona data with addPersona method for to be Validator  
 * 2 : Create a Validator with AddValidator method and Validator address  
 * 3 : Set the values of data to be Decrypted  
-
 ## ----- Step 15.2 -----   
 ### Input:  
 * 0 : _accept: bool: accept / rejected << 1 >>  
