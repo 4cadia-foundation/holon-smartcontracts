@@ -7,7 +7,9 @@
 
 
 ## ----- Step 1 -----
+______________________________________________________
 ## addInfoCategory - Insert category for persona data
+______________________________________________________
 ### Input:
 * 0 : _index - category id  << 1 >>  
 * 1 : _details - category name << Personal Data >>  
