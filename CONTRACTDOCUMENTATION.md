@@ -1,5 +1,5 @@
 
-# Create accounts for test in MetaMask
+# Create accounts for test in MetaMask 
 
 * 1 - Account 1 - PersonaValidator  
 * 2 - Account 2 - PersonaOnly  
@@ -7,30 +7,26 @@
 
 
 ## Step 1
-
 ## addInfoCategory - Insert category for persona data
-
 ### Input:
 * 0 : _index - category id  << 1 >>  
 * 1 : _details - category name << Personal Data >>  
-Return:  
+### Return:  
 * 0 : bool << true >>  
-Unit Test:  
+### Unit Test:  
 * Any account with balance can create a category  
 
-Step 2  
---------------------------------------  
-infoCategories - return Category data  
---------------------------------------  
-Input  
+## Step 2  
+## infoCategories - return Category data  
+###Input  
 * 0 : uint256: Category id << 1 >>  
-Return:  
+###Return:  
 * 0 : string: Category data / name << Personal Data>>  
-Unit Test:  
+###Unit Test:  
 * 0 : Create a Category with addInfoCategory Method  
 * 1 : Retrieve Category data with Category id      
 
-Step 3
+##Step 3
 ----------------------------------
 addPersona - Insert Persona / data  
 ----------------------------------
