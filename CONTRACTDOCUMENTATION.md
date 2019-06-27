@@ -1,9 +1,9 @@
 ------------------------------------
 Create accounts for test in MetaMask
 ------------------------------------
-    + 1 - Account 1 - PersonaValidator  
-    + 2 - Account 2 - PersonaOnly  
-    + 3 - Account 3 - Consumer  
+   1 - Account 1 - PersonaValidator  
+   2 - Account 2 - PersonaOnly  
+   3 - Account 3 - Consumer  
 
 
 Step 1
