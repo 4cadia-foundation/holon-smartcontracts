@@ -7,7 +7,7 @@
 ______________________________________________________
 
 ## ----- Step 1 -----
-## addInfoCategory - Insert category for persona data
+> ## addInfoCategory - Insert category for persona data
 ### Input:
 * 0 : _index - category id  << 1 >>  
 * 1 : _details - category name << Personal Data >>  
@@ -17,7 +17,7 @@ ______________________________________________________
 * Any account with balance can create a category  
 ______________________________________________________
 ## ----- Step 2 ----- 
-## infoCategories - return Category data  
+> ## infoCategories - return Category data  
 ### Input  
 * 0 : uint256: Category id << 1 >>  
 ### Return:  
@@ -27,7 +27,7 @@ ______________________________________________________
 * 1 : Retrieve Category data with Category id      
 ______________________________________________________
 ## ----- Step 3 -----
-## addPersona - Insert Persona / data  
+> ## addPersona - Insert Persona / data  
 ## ----- Step 3.1 -----  
 ### Premise:  
 * 0 : Use PersonaValidator account  
@@ -77,7 +77,7 @@ ______________________________________________________
 * * addPersona only one address  
 ______________________________________________________
 ## ----- Step 4 - Check PersonalValidator data -----  
-## members - return persona data  
+> ## members - return persona data  
 ### Input:  
 * 0 : address: << PersonalValidator address >   
 ### Return:  
@@ -89,7 +89,7 @@ ______________________________________________________
 * 1 : Provide Persona address  
 ______________________________________________________
 ## ----- Step 5 - Check PersonalOnly data -----  
-## members - return persona data  
+> ## members - return persona data  
 ### Input:  
 * 0 : address: << PersonalOnly address >>   
 ### Return:  
@@ -101,7 +101,7 @@ ______________________________________________________
 * 1 : Provide Persona address  
 ______________________________________________________
 ## ----- Step 6 - Check Consumer data ----- 
-## members - return persona data  
+> ## members - return persona data  
 ### Input:  
 * 0 : address: << Consumer address >>   
 ### Return:  
@@ -113,7 +113,7 @@ ______________________________________________________
 * 1 : Provide Persona address  
 ______________________________________________________
 ## ----- step 7 -----  
-## addData - Insert data for existing Persona  
+> ## addData - Insert data for existing Persona  
 ### Input:  
 * 0 : _InfoCode - Info code << 1 >>  
 * 1 : _dataCategory: DataCategory: enum (0 - PlainText, 1 - IPFSHash, 2 - URI ) << 0 >>  
@@ -129,7 +129,7 @@ ______________________________________________________
 * * Any account with balance can create data for your existing Persona  
 ______________________________________________________
 ## ----- Step 8 -----  
-## getPersonaData - Return Persona data  
+> ## getPersonaData - Return Persona data  
 ## ----- Step 8.1 -----  
 ### Input:   
 * 0 : _address - Persona Address << PersonaValidator address >>  
@@ -160,7 +160,7 @@ ______________________________________________________
 * 1 : Retrieve Persona data with same address  
 ______________________________________________________
 ## ----- Step 9 -----  
-## AddValidator - Insert validator  
+> ## AddValidator - Insert validator  
 ### Premise:  
 * 0 : Use PersonaValidator account  
 ### Input:  
@@ -173,7 +173,7 @@ ______________________________________________________
 * 1 : Add Validator data (_strategy and _price)  
 ______________________________________________________
 ## ----- Step 10 -----  
-## holonValidators - return Validator data  
+> ## holonValidators - return Validator data  
 ### Input:  
 * 0 : address: validatorAddress << PersonaValidator address >>  
 ### Return  
@@ -187,7 +187,7 @@ ______________________________________________________
 * 1 : Create a Validator with AddValidator method and same Person address      
 ______________________________________________________
 ## ----- Step 11 -----  
-## validate - validation process for Personal data  
+> ## validate - validation process for Personal data  
 ## ----- Step 11.1 -----  
 ### Input:   
 * 0 : _persona: address: Persona address << PersonaOnly address >>  
@@ -212,7 +212,7 @@ ______________________________________________________
 * 1 : Set the values (_persona, _field) - use a Persona's address to validate and _status for set result  
 ______________________________________________________
 ## ----- Step 12 - Check -----  
-## getPersonaDataValidatorDetails - Return validation details for Persona Data  
+> ## getPersonaDataValidatorDetails - Return validation details for Persona Data  
 ## ----- Step 12.1 -----  
 ### Input:  
 * 0 - _address - Persona Address << PersonaOnly address >>  
@@ -251,7 +251,7 @@ ______________________________________________________
 * 2 : Create a Validator with AddValidator method and Validator's address  
 ______________________________________________________
 ## ----- Step 13 -----  
-## askToValidate - request data validation by Validator  
+> ## askToValidate - request data validation by Validator  
 ### Premises:  
 * 0 : Use PersonalOnly account  
 ## ----- Step 13.1 - Validate Email ----- 
@@ -284,7 +284,7 @@ ______________________________________________________
 * 3 : Set the values of data to be Validated  
 ______________________________________________________
 ## ----- Step 14 -----  
-## askDecryptedData - request decrypted data from Persona  
+> ## askDecryptedData - request decrypted data from Persona  
 ### Premises:  
 * 0 : Use Consumer Account  
 ### Input:  
@@ -298,7 +298,7 @@ ______________________________________________________
 * 1 : Set the values  
 ______________________________________________________
 ### ----- Step 15 ----- 
-## deliverDecryptedData - deliver decrypted Persona data to Consumer   
+> ## deliverDecryptedData - deliver decrypted Persona data to Consumer   
 ### Premises:  
 * 0 : Use PersonaOnly Account  
 ### ----- Step 15.1 -----      
@@ -331,6 +331,7 @@ ______________________________________________________
 * 1 : Create other Persona data with addPersona method for to be Validator  
 * 2 : Create a Validator with AddValidator method and Validator address  
 * 3 : Set the values of data to be Decrypted  
+
 
 
 
