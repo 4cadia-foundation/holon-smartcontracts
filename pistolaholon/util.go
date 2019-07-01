@@ -30,16 +30,16 @@ func queryPersonaData(holon *proxycontract.Holon, address common.Address, fieldn
 	return
 }
 
-func getAccountDetails(client *ethclient.Client, actor string) (privateKey *ecdsa.PrivateKey, publicKeyECDSA *ecdsa.PublicKey, fromAddress common.Address, nonce uint64, err error) {
+func getAccountDetails(client *ethclient.Client, actor string, index int) (privateKey *ecdsa.PrivateKey, publicKeyECDSA *ecdsa.PublicKey, fromAddress common.Address, nonce uint64, err error) {
 	var prvKey string
 	if actor == "masteraccount" {
 		prvKey = HolonConfigData.MasterAccount.PrivateKey
-	} else if actor == "persona01" {
-		prvKey = HolonConfigData.Personas[0].PrivateKey
-	} else if actor == "validator01" {
-		prvKey = HolonConfigData.Validators[0].PrivateKey
-	} else if actor == "consumer01" {
-		prvKey = HolonConfigData.Validators[0].PrivateKey
+	} else if actor == "persona" {
+		prvKey = HolonConfigData.Personas[index].PrivateKey
+	} else if actor == "validator" {
+		prvKey = HolonConfigData.Validators[index].PrivateKey
+	} else if actor == "consumer" {
+		prvKey = HolonConfigData.Validators[index].PrivateKey
 	}
 	privateKey, err = crypto.HexToECDSA(prvKey)
 	if err != nil {
@@ -61,16 +61,16 @@ func getAccountDetails(client *ethclient.Client, actor string) (privateKey *ecds
 }
 
 func getAccountDetailsMasterAccount(client *ethclient.Client) (privateKey *ecdsa.PrivateKey, publicKeyECDSA *ecdsa.PublicKey, fromAddress common.Address, nonce uint64, err error) {
-	return getAccountDetails(client, "masteraccount")
+	return getAccountDetails(client, "masteraccount", 0)
 }
 
-func getTransactor(client *ethclient.Client, actor string) (auth *bind.TransactOpts, err error) {
+func getTransactor(client *ethclient.Client, actor string, index int) (auth *bind.TransactOpts, err error) {
 	var privateKey *ecdsa.PrivateKey
 	var nonce uint64
 	if actor == "masteraccount" {
 		privateKey, _, _, nonce, err = getAccountDetailsMasterAccount(client)
 	} else {
-		privateKey, _, _, nonce, err = getAccountDetails(client, actor)
+		privateKey, _, _, nonce, err = getAccountDetails(client, actor, index)
 	}
 	if err != nil {
 		log.Fatalln("It was not possible to obtain actor account information: ", err.Error())

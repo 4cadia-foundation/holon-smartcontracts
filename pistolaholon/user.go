@@ -34,11 +34,11 @@ type PluginConfig struct {
 
 //PersonaData Persona's mock data
 type PersonaData struct {
-	InfoCode     string
+	InfoCode     int
 	Field        string
 	Data         string
-	DataCategory string
+	DataCategory int
 	Reputation   int
 	Validations  int
-	Price        string
+	Price        int
 }

@@ -96,7 +96,7 @@ func main() {
 	}
 
 	log.Println("Deploying contract...")
-	auth, err := getTransactor(client, "masteraccount")
+	auth, err := getTransactor(client, "masteraccount", 0)
 	if err != nil {
 		log.Fatalln("It was not possible to generate transactor to send transaction to blockchain. Error: ", err.Error())
 		return
@@ -115,82 +115,15 @@ func main() {
 
 	stageStep = moveFowardStage(stageStep)
 
-	/*
-
-		Adding info category
-
-	*/
 	testAddInfoCategory(client, holon)
 
 	stageStep = moveFowardStage(stageStep)
 
-	/*
-
-		Adding new Persona
-
-	*/
-	log.Println("Adding Persona", HolonConfigData.Personas[0].Address.Hex(), "....")
-	auth, err = getTransactor(client, "persona01")
-	if err != nil {
-		log.Fatalln("It was not possible to generate transactor to send transaction to blockchain. Error: ", err.Error())
-		return
-	}
-	trx, err = holon.AddPersona(auth, big.NewInt(1), uint8(0), "email", "vicvictoriabarcelona@gmail.com", big.NewInt(0))
-	if err != nil {
-		log.Fatalln("It was not possible to submit a new persona. Error: ", err.Error())
-		return
-	}
-	txReceipt, err = goethereumhelper.WaitForTransctionProcessing(client, trx, MaxAttempts, CheckInterval)
-	if err != nil {
-		log.Fatalln("It was not possible to add a new persona. Error: ", err.Error())
-		return
-	}
-	persona01, err := holon.Members(nil, HolonConfigData.Personas[0].Address)
-	if err != nil {
-		log.Fatalln("It was not possible to get the new added persona. Error: ", err.Error())
-		return
-	}
-	log.Printf("Persona Address %s\n", persona01.PersonalAddress.Hex())
-	/*
-
-		Querying Persona's data
-
-	*/
-	pData, err := queryPersonaData(holon, persona01.PersonalAddress, "email")
-	if err != nil {
-		log.Fatalln("It was not possible to get the email from the new added persona. Error: ", err.Error())
-		return
-	}
+	testAddPersonas(client, holon)
 
 	stageStep = moveFowardStage(stageStep)
 
-	/*
-
-		Adding data
-
-	*/
-	log.Println("Adding Data to Persona", HolonConfigData.Personas[0].Address.Hex(), "....")
-	auth, err = getTransactor(client, "persona01")
-	if err != nil {
-		log.Fatalln("It was not possible to generate transactor to send transaction to blockchain. Error: ", err.Error())
-		return
-	}
-	trx, err = holon.AddData(auth, big.NewInt(1), uint8(0), "name", "Victoria Almodovar", big.NewInt(0))
-	if err != nil {
-		log.Fatalln("It was not possible to submit a new data to a persona. Error: ", err.Error())
-		return
-	}
-	txReceipt, err = goethereumhelper.WaitForTransctionProcessing(client, trx, MaxAttempts, CheckInterval)
-	if err != nil {
-		log.Fatalln("It was not possible to add a new data to a persona. Error: ", err.Error())
-		return
-	}
-	pData, err = queryPersonaData(holon, persona01.PersonalAddress, "name")
-	if err != nil {
-		log.Fatalln("It was not possible to get the email from the new added persona. Error: ", err.Error())
-		return
-	}
-	log.Printf("Persona %s name included to her profile %#v\n", HolonConfigData.Personas[0].Address.Hex(), pData)
+	testAddDataToPersonas(client, holon)
 
 	stageStep = moveFowardStage(stageStep)
 
@@ -200,7 +133,7 @@ func main() {
 
 	*/
 	log.Println("Adding Validator as Persona", HolonConfigData.Validators[0].Address.Hex(), "....")
-	auth, err = getTransactor(client, "validator01")
+	auth, err = getTransactor(client, "validator", 0)
 	if err != nil {
 		log.Fatalln("It was not possible to generate transactor to send transaction to blockchain. Error: ", err.Error())
 		return
@@ -225,7 +158,7 @@ func main() {
 		Querying Validator's data
 
 	*/
-	pData, err = queryPersonaData(holon, validatorPersona01.PersonalAddress, "email")
+	pData, err := queryPersonaData(holon, validatorPersona01.PersonalAddress, "email")
 	if err != nil {
 		log.Fatalln("It was not possible to get the email from the new added persona. Error: ", err.Error())
 		return
@@ -240,7 +173,7 @@ func main() {
 
 	*/
 	log.Println("Adding Validator as Validator", HolonConfigData.Validators[0].Address.Hex(), "....")
-	auth, err = getTransactor(client, "validator01")
+	auth, err = getTransactor(client, "validator", 0)
 	if err != nil {
 		log.Fatalln("It was not possible to generate transactor to send transaction to blockchain. Error: ", err.Error())
 		return
@@ -277,7 +210,7 @@ func main() {
 
 	*/
 	log.Printf("Persona %s asking to validator %s to validate her email...\n", HolonConfigData.Personas[0].Address.Hex(), HolonConfigData.Validators[0].Address.Hex())
-	auth, err = getTransactor(client, "persona01")
+	auth, err = getTransactor(client, "persona", 0)
 	if err != nil {
 		log.Fatalln("It was not possible to generate transactor to send transaction to blockchain. Error: ", err.Error())
 		return
@@ -301,12 +234,12 @@ func main() {
 
 	*/
 	log.Printf("Validator %s validating persona %s email\n", HolonConfigData.Validators[0].Address.Hex(), HolonConfigData.Personas[0].Address.Hex())
-	auth, err = getTransactor(client, "validator01")
+	auth, err = getTransactor(client, "validator", 0)
 	if err != nil {
 		log.Fatalln("It was not possible to generate transactor to send transaction to blockchain. Error: ", err.Error())
 		return
 	}
-	trx, err = holon.Validate(auth, persona01.PersonalAddress, "email", 0)
+	trx, err = holon.Validate(auth, HolonConfigData.Personas[0].Address, "email", 0)
 	if err != nil {
 		log.Fatalln("It was not possible to submit a new validation. Error: ", err.Error())
 		return
@@ -318,7 +251,7 @@ func main() {
 	}
 	log.Println("Data validated.")
 	log.Println("Querying persona's profile to check the changes...")
-	pData, err = queryPersonaData(holon, persona01.PersonalAddress, "email")
+	pData, err = queryPersonaData(holon, HolonConfigData.Personas[0].Address, "email")
 	if err != nil {
 		log.Fatalln("It was not possible to get the email from the new added persona. Error: ", err.Error())
 		return
@@ -345,12 +278,12 @@ func main() {
 
 	*/
 	log.Printf("Consumer %s asking to persona %s to access her email\n", HolonConfigData.Consumers[0].Address.Hex(), HolonConfigData.Personas[0].Address.Hex())
-	auth, err = getTransactor(client, "consumer01")
+	auth, err = getTransactor(client, "consumer", 0)
 	if err != nil {
 		log.Fatalln("It was not possible to generate transactor to send transaction to blockchain. Error: ", err.Error())
 		return
 	}
-	trx, err = holon.AskDecryptedData(auth, persona01.PersonalAddress, "email")
+	trx, err = holon.AskDecryptedData(auth, HolonConfigData.Personas[0].Address, "email")
 	if err != nil {
 		log.Fatalln("It was not possible to submit a new data order to persona. Error: ", err.Error())
 		return
@@ -370,7 +303,7 @@ func main() {
 
 	*/
 	log.Printf("Persona %s delivering email data to consumer %s\n", HolonConfigData.Personas[0].Address.Hex(), HolonConfigData.Consumers[0].Address.Hex())
-	auth, err = getTransactor(client, "persona01")
+	auth, err = getTransactor(client, "persona", 0)
 	if err != nil {
 		log.Fatalln("It was not possible to generate transactor to send transaction to blockchain. Error: ", err.Error())
 		return

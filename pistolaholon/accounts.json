@@ -1,15 +1,15 @@
 {
-    "infoCategory": [
+    "infoCategories": [
         {
-            "index": "1",
+            "index": 1,
             "details": "Personal Info"
         },
         {
-            "index": "2",
+            "index": 2,
             "details": "Professional Info"
         },
         {
-            "index": "3",
+            "index": 3,
             "details": "Financial Info"
         }
     ],
@@ -23,18 +23,18 @@
             "privatekey" : "FA757D8303BD902FB2E04E96C349023131050E321C04B2C3635839379D5B966B",
             "personaData" : [
                 {
-                    "infoCode": "1",
-                    "dataCategory": "0",
-                    "field": "Email",
+                    "infoCode": 1,
+                    "dataCategory": 0,
+                    "field": "email",
                     "data": "emailPersona_01@email.com",
-                    "price": "10000000000000000"
+                    "price": 10000000000000000
                 },
                 {
-                    "infoCode": "1",
-                    "dataCategory": "0",
-                    "field": "Name",
+                    "infoCode": 1,
+                    "dataCategory": 0,
+                    "field": "name",
                     "data": "José Persona 01",
-                    "price": "10000000000000000"
+                    "price": 10000000000000000
                 }
             ]
         },
@@ -43,18 +43,18 @@
             "privatekey" : "C9FC81A1C5E60CD49DF15EB33667A69655468031873AF64930EF7A82A6A61076",
             "personaData" : [
                 {
-                    "infoCode": "1",
-                    "dataCategory": "0",
-                    "field": "Email",
+                    "infoCode": 1,
+                    "dataCategory": 0,
+                    "field": "email",
                     "data": "emailPersona_02@email.com",
-                    "price": "13000000000000000"
+                    "price": 13000000000000000
                 },
                 {
-                    "infoCode": "1",
-                    "dataCategory": "0",
-                    "field": "Name",
+                    "infoCode": 1,
+                    "dataCategory": 0,
+                    "field": "name",
                     "data": "Paulo Persona 02",
-                    "price": "15000000000000000"
+                    "price": 15000000000000000
                 }
             ]
         },
@@ -63,18 +63,18 @@
             "privatekey" : "F81ED0C6FE81872F9A231071FFEC9A71A56CF03AB4320459F1C77042E465403E",
             "personaData" : [
                 {
-                    "infoCode": "1",
-                    "dataCategory": "0",
-                    "field": "Email",
+                    "infoCode": 1,
+                    "dataCategory": 0,
+                    "field": "email",
                     "data": "emailPersona_03@email.com",
-                    "price": "17000000000000000"
+                    "price": 17000000000000000
                 },
                 {
-                    "infoCode": "1",
-                    "dataCategory": "0",
-                    "field": "Name",
+                    "infoCode": 1,
+                    "dataCategory": 0,
+                    "field": "name",
                     "data": "Pedrita Persona 03",
-                    "price": "18000000000000000"
+                    "price": 18000000000000000
                 }
             ]
         }              
@@ -85,18 +85,18 @@
             "privatekey" : "37CB7B1DEF9DC0F219DB7D0A0D14E2F1E25609FE2CFE31C8DA6DA70EAFB43E2F",
             "personaData" : [
                 {
-                    "infoCode": "1",
-                    "dataCategory": "0",
-                    "field": "Email",
+                    "infoCode": 1,
+                    "dataCategory": 0,
+                    "field": "email",
                     "data": "emailValidator_01@email.com",
-                    "price": "10000000000000000"
+                    "price": 10000000000000000
                 },
                 {
-                    "infoCode": "1",
-                    "dataCategory": "0",
-                    "field": "Name",
+                    "infoCode": 1,
+                    "dataCategory0": 0,
+                    "field": "name",
                     "data": "Maria Validadora",
-                    "price": "10000000000000000"
+                    "price": 10000000000000000
                 }
             ]
 
