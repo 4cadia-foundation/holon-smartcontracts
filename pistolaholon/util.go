@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/ecdsa"
 	"encoding/json"
+	"io"
 	"io/ioutil"
 	"log"
 	"math/big"
@@ -90,6 +91,18 @@ func getTransactor(client *ethclient.Client, actor string) (auth *bind.TransactO
 	return
 }
 
+// ReadPluginConfig returns a parsed plugin's config file.
+func ReadPluginConfig(reader io.Reader) (PluginConfig, error) {
+	dec := json.NewDecoder(reader)
+
+	var plugin PluginConfig
+	if err := dec.Decode(&plugin); err != nil {
+		return PluginConfig{}, err
+	}
+
+	return plugin, nil
+}
+
 func loadConfig() (err error) {
 	err = nil
 	file, err := ioutil.ReadFile("accounts.json")
@@ -100,6 +113,36 @@ func loadConfig() (err error) {
 	err = json.Unmarshal([]byte(file), &HolonConfigData)
 	if err != nil {
 		log.Printf("[loadAccounts] I could not add testing account information Holon testing struct : Error: %#v\n", err)
+		return
+	}
+	return
+}
+
+func loadPluginConfig(filePath string) (tmpPluginConfig PluginConfig, err error) {
+	err = nil
+	file, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		log.Printf("[loadPluginConfig] I could not read the testing account definitions at [%s]: Error: %#v\n", filePath, err)
+		return
+	}
+	err = json.Unmarshal([]byte(file), &tmpPluginConfig)
+	if err != nil {
+		log.Printf("[loadPluginConfig] I could not add testing account information from file [%s] with content [%s] to Holon testing struct : Error: %#v\n", filePath, string(file), err)
+		return
+	}
+	return
+}
+
+func savePluginConfig(filePath string, tmpPluginConfig PluginConfig) (err error) {
+	err = nil
+	file, err := json.MarshalIndent(tmpPluginConfig, "", " ")
+	if err != nil {
+		log.Printf("[savePluginConfig] I could not marshal JSON data to byte array: Error: %#v\n", err)
+		return
+	}
+	err = ioutil.WriteFile(filePath, file, 0774)
+	if err != nil {
+		log.Printf("[savePluginConfig] I could not save plugin config data [\n%#v\n] to the file %s: Error: %#v\n", tmpPluginConfig, filePath, err)
 		return
 	}
 	return

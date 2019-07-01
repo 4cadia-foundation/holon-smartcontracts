@@ -15,6 +15,8 @@ import (
 
 var isZoeiraModeOn bool
 var stageStep int
+var configFileName string
+var pluginConfigFile PluginConfig
 
 func main() {
 
@@ -52,7 +54,11 @@ func main() {
 		log.Println("")
 	}
 
-	log.Println("ConfigPath ", *configPath)
+	configFileName = *configPath
+	if len(configFileName) > 4 {
+		log.Println("ConfigPath ", configFileName)
+		log.Println("")
+	}
 
 	log.Println("")
 	log.Println("Connecting to Pistola Local Network...")
@@ -81,6 +87,14 @@ func main() {
 	log.Println("Accounts loaded.")
 	// log.Printf("Accounts: %#v\n", HolonConfigData)
 
+	if len(configFileName) > 4 {
+		log.Println("Opening Plugin ConfigFile ", configFileName, "...")
+		pluginConfigFile, err = loadPluginConfig(configFileName)
+		if err != nil {
+			log.Fatalln("It was not possible to read plugin config file. Error: ", err.Error())
+		}
+	}
+
 	log.Println("Deploying contract...")
 	auth, err := getTransactor(client, "masteraccount")
 	if err != nil {
@@ -96,6 +110,7 @@ func main() {
 	if err != nil {
 		log.Fatalln("It was not possible to deploy the contract. Error: ", err.Error())
 	}
+	pluginConfigFile.Address = contractAddr
 	log.Printf("Contract was succefully deployed at: %s with status %d\n", contractAddr.Hex(), txReceipt.Status)
 
 	stageStep = moveFowardStage(stageStep)
@@ -382,6 +397,17 @@ func main() {
 }
 
 func finishTests() {
+	var err error
+	//Save plugin config file
+	if len(configFileName) > 4 {
+		if len(pluginConfigFile.Address.Hash()) > 10 {
+			err = savePluginConfig(configFileName, pluginConfigFile)
+			if err != nil {
+				log.Fatalln("Could not save plugin config file")
+			}
+		}
+	}
+
 	log.Println("")
 	log.Println("Tests finished.")
 	log.Println("")
