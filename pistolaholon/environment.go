@@ -1,7 +1,7 @@
 package main
 
-//HolonUsersAccounts storage Holon testing accounts
-var HolonUsersAccounts HolonUsers
+//HolonConfigData storage Holon testing accounts and other config data
+var HolonConfigData HolonConfig
 
 //MaxAttempts max attempts to check contracts operations
 var MaxAttempts = 60

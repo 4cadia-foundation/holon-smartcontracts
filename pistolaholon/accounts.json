@@ -20,7 +20,23 @@
     "personas": [
         {
             "address" : "0xc3d8DFCA4b2387D1d0Bf8A7C4D7B361a26863AAC",
-            "privatekey" : "FA757D8303BD902FB2E04E96C349023131050E321C04B2C3635839379D5B966B"
+            "privatekey" : "FA757D8303BD902FB2E04E96C349023131050E321C04B2C3635839379D5B966B",
+            "personaData" : [
+                {
+                    "infoCode": "1",
+                    "dataCategory": "0",
+                    "field": "Email",
+                    "data": "emailPersona_01@email.com",
+                    "price": "10000000000000000"
+                },
+                {
+                    "infoCode": "1",
+                    "dataCategory": "0",
+                    "field": "Name",
+                    "data": "José Pequeno",
+                    "price": "10000000000000000"
+                }
+            ]
         }
     ],
     "validators": [
@@ -34,61 +50,5 @@
             "address" : "0x8ac7fB9923165DD5A28f155abA8b037E67ab1714",
             "privatekey" : "92544E362CC88D418D4536414B0D516D27DB9051551475B6F8E9D6348D9BA18C"
         }
-    ],
-    "addPersonna" : [
-        {
-            "address" : "0xc3d8DFCA4b2387D1d0Bf8A7C4D7B361a26863AAC",
-            "infoCode": "1",
-            "dataCategory": "0",
-            "field": "Email",
-            "data": "emailPersona_01@email.com",
-            "price": "10000000000000000"
-        },
-        {
-            "address" : "0x1c5fBDf725C093c52A8464d226d7cf68c2605Ec0",
-            "infoCode": "1",
-            "dataCategory": "0",
-            "field": "Email",
-            "data": "emailValidador_01@email.com",
-            "price": "30000000000000000"
-        },
-        {
-            "address" : "0x8ac7fB9923165DD5A28f155abA8b037E67ab1714",
-            "infoCode": "1",
-            "dataCategory": "0",
-            "field": "Email",
-            "data": "emailConsumer_01@email.com",
-            "price": "50000000000000000"
-        }
-    ],
-    "addData": [
-        {
-            "address" : "0xc3d8DFCA4b2387D1d0Bf8A7C4D7B361a26863AAC",
-            "infoCode": "1",
-            "dataCategory": "0",
-            "field": "Phone",
-            "data": "11 1234-5678",
-            "price": "20000000000000000"
-        },
-        {
-            "address" : "0x1c5fBDf725C093c52A8464d226d7cf68c2605Ec0",
-            "infoCode": "1",
-            "dataCategory": "0",
-            "field": "Phone",
-            "data": "11 5678-9012",
-            "price": "40000000000000000"
-        },
-        {
-            "address" : "0x8ac7fB9923165DD5A28f155abA8b037E67ab1714",
-            "infoCode": "1",
-            "dataCategory": "0",
-            "field": "Phone",
-            "data": "11 9012-3456",
-            "price": "60000000000000000"
-        }
-    ],
-    "addValidator" : {
-        "strategy" : "0",
-        "price": "0"
-    }
+    ]
 }

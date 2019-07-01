@@ -32,13 +32,13 @@ func queryPersonaData(holon *proxycontract.Holon, address common.Address, fieldn
 func getAccountDetails(client *ethclient.Client, actor string) (privateKey *ecdsa.PrivateKey, publicKeyECDSA *ecdsa.PublicKey, fromAddress common.Address, nonce uint64, err error) {
 	var prvKey string
 	if actor == "masteraccount" {
-		prvKey = HolonUsersAccounts.MasterAccount.PrivateKey
+		prvKey = HolonConfigData.MasterAccount.PrivateKey
 	} else if actor == "persona01" {
-		prvKey = HolonUsersAccounts.Personas[0].PrivateKey
+		prvKey = HolonConfigData.Personas[0].PrivateKey
 	} else if actor == "validator01" {
-		prvKey = HolonUsersAccounts.Validators[0].PrivateKey
+		prvKey = HolonConfigData.Validators[0].PrivateKey
 	} else if actor == "consumer01" {
-		prvKey = HolonUsersAccounts.Validators[0].PrivateKey
+		prvKey = HolonConfigData.Validators[0].PrivateKey
 	}
 	privateKey, err = crypto.HexToECDSA(prvKey)
 	if err != nil {
@@ -90,14 +90,14 @@ func getTransactor(client *ethclient.Client, actor string) (auth *bind.TransactO
 	return
 }
 
-func loadAccounts() (err error) {
+func loadConfig() (err error) {
 	err = nil
 	file, err := ioutil.ReadFile("accounts.json")
 	if err != nil {
 		log.Printf("[loadAccounts] I could not read the testing account definitions: Error: %#v\n", err)
 		return
 	}
-	err = json.Unmarshal([]byte(file), &HolonUsersAccounts)
+	err = json.Unmarshal([]byte(file), &HolonConfigData)
 	if err != nil {
 		log.Printf("[loadAccounts] I could not add testing account information Holon testing struct : Error: %#v\n", err)
 		return

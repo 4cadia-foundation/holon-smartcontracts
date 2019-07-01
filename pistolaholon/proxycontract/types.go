@@ -15,6 +15,7 @@ type PersonaReturn struct {
 
 //InfoReturn data returned from
 type InfoReturn struct {
+	InfoCode     int
 	Field        string
 	Data         string
 	DataCategory uint8
