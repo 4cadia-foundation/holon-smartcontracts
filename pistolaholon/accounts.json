@@ -33,16 +33,74 @@
                     "infoCode": "1",
                     "dataCategory": "0",
                     "field": "Name",
-                    "data": "José Pequeno",
+                    "data": "José Persona 01",
                     "price": "10000000000000000"
                 }
             ]
-        }
+        },
+        {
+            "address" : "0xF035261f87132fcd3C37730f8A07982B8d7d1330",
+            "privatekey" : "C9FC81A1C5E60CD49DF15EB33667A69655468031873AF64930EF7A82A6A61076",
+            "personaData" : [
+                {
+                    "infoCode": "1",
+                    "dataCategory": "0",
+                    "field": "Email",
+                    "data": "emailPersona_02@email.com",
+                    "price": "13000000000000000"
+                },
+                {
+                    "infoCode": "1",
+                    "dataCategory": "0",
+                    "field": "Name",
+                    "data": "Paulo Persona 02",
+                    "price": "15000000000000000"
+                }
+            ]
+        },
+        ,
+        {
+            "address" : "0xDf5F84382EedCA8424D976a5a25C6e4FE5b51f95",
+            "privatekey" : "F81ED0C6FE81872F9A231071FFEC9A71A56CF03AB4320459F1C77042E465403E",
+            "personaData" : [
+                {
+                    "infoCode": "1",
+                    "dataCategory": "0",
+                    "field": "Email",
+                    "data": "emailPersona_03@email.com",
+                    "price": "17000000000000000"
+                },
+                {
+                    "infoCode": "1",
+                    "dataCategory": "0",
+                    "field": "Name",
+                    "data": "Pedrita Persona 03",
+                    "price": "18000000000000000"
+                }
+            ]
+        }              
     ],
     "validators": [
         {
             "address" : "0x1c5fBDf725C093c52A8464d226d7cf68c2605Ec0",
-            "privatekey" : "37CB7B1DEF9DC0F219DB7D0A0D14E2F1E25609FE2CFE31C8DA6DA70EAFB43E2F"
+            "privatekey" : "37CB7B1DEF9DC0F219DB7D0A0D14E2F1E25609FE2CFE31C8DA6DA70EAFB43E2F",
+            "personaData" : [
+                {
+                    "infoCode": "1",
+                    "dataCategory": "0",
+                    "field": "Email",
+                    "data": "emailValidator_01@email.com",
+                    "price": "10000000000000000"
+                },
+                {
+                    "infoCode": "1",
+                    "dataCategory": "0",
+                    "field": "Name",
+                    "data": "Maria Validadora",
+                    "price": "10000000000000000"
+                }
+            ]
+
         }
     ],
     "consumers": [
