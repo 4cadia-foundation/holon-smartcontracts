@@ -23,7 +23,7 @@ func main() {
 	stage := flag.Int("stage", 10, "Defines the limit where the Bot should reach")
 	showHelp := flag.Bool("help", false, "Show Bot's help")
 	zueiraMode := flag.Bool("zueira", false, "Show Bot's help")
-	configPath := flag.String("destConfigFile", "/home/jeffprestes/projetos/", "Defines where plugin's config file is")
+	configPath := flag.String("destConfigFile", "", "Defines where plugin's config file is")
 	flag.Parse()
 
 	isZoeiraModeOn = *zueiraMode
