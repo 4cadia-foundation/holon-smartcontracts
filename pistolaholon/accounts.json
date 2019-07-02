@@ -14,8 +14,8 @@
         }
     ],
     "masteraccount": {
-        "address" : "0x8b542882b80EE26B004E279aA547e6FF6F6B2974",
-        "privatekey" : "4f711082ece7191a111ab86bc46ba93ba0b0c34c2b5f7d6d585a1e8f3832e576"
+        "address" : "0x1CC029148709da9014A91Ba4B71432F89dd2f601",
+        "privatekey" : "e452c91efead165ec9ba005b5f437be6101eb10a7c650a3d0cc5da80d9ed5d80"
     },
     "personas": [
         {
@@ -27,14 +27,14 @@
                     "dataCategory": 0,
                     "field": "email",
                     "data": "emailPersona_01@email.com",
-                    "price": 10000000000000000
+                    "price": 0
                 },
                 {
                     "infoCode": 1,
                     "dataCategory": 0,
                     "field": "name",
                     "data": "José Persona 01",
-                    "price": 10000000000000000
+                    "price": 0
                 }
             ]
         },
