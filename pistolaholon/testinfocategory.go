@@ -29,7 +29,7 @@ func testAddInfoCategory(client *ethclient.Client, holon *proxycontract.Holon) (
 			log.Fatalln("It was not possible to add a info category. Error: ", err.Error())
 			return
 		}
-		_, err = goethereumhelper.WaitForTransctionProcessing(client, trx, MaxAttempts, CheckInterval)
+		_, err = goethereumhelper.WaitForTransactionProcessing(client, trx, MaxAttempts, CheckInterval)
 		if err != nil {
 			log.Fatalln("It was not possible to add a new info category. Error: ", err.Error())
 			return

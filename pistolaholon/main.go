@@ -106,7 +106,7 @@ func main() {
 		log.Fatalln("It was not possible to deploy the contract. Error: ", err.Error())
 	}
 	log.Println("Contract deployed at: ", contractAddr.Hex())
-	txReceipt, err := goethereumhelper.WaitForTransctionProcessing(client, trx, MaxAttempts, CheckInterval)
+	txReceipt, err := goethereumhelper.WaitForTransactionProcessing(client, trx, MaxAttempts, CheckInterval)
 	if err != nil {
 		log.Fatalln("It was not possible to deploy the contract. Error: ", err.Error())
 	}
@@ -143,7 +143,7 @@ func main() {
 		log.Fatalln("It was not possible to submit a new persona. Error: ", err.Error())
 		return
 	}
-	txReceipt, err = goethereumhelper.WaitForTransctionProcessing(client, trx, MaxAttempts, CheckInterval)
+	txReceipt, err = goethereumhelper.WaitForTransactionProcessing(client, trx, MaxAttempts, CheckInterval)
 	if err != nil {
 		log.Fatalln("It was not possible to add a new persona. Error: ", err.Error())
 		return
@@ -184,7 +184,7 @@ func main() {
 		log.Fatalln("It was not possible to submit a new validator. Error: ", err.Error())
 		return
 	}
-	txReceipt, err = goethereumhelper.WaitForTransctionProcessing(client, trx, MaxAttempts, CheckInterval)
+	txReceipt, err = goethereumhelper.WaitForTransactionProcessing(client, trx, MaxAttempts, CheckInterval)
 	if err != nil {
 		log.Fatalln("It was not possible to add a new validator. Error: ", err.Error())
 		return
@@ -220,7 +220,7 @@ func main() {
 		log.Fatalln("It was not possible to submit a new validator. Error: ", err.Error())
 		return
 	}
-	_, err = goethereumhelper.WaitForTransctionProcessing(client, trx, MaxAttempts, CheckInterval)
+	_, err = goethereumhelper.WaitForTransactionProcessing(client, trx, MaxAttempts, CheckInterval)
 	if err != nil {
 		log.Fatalln("It was not possible to persona to ask to a validator to validate a data. Error: ", err.Error())
 		return
@@ -244,7 +244,7 @@ func main() {
 		log.Fatalln("It was not possible to submit a new validation. Error: ", err.Error())
 		return
 	}
-	_, err = goethereumhelper.WaitForTransctionProcessing(client, trx, MaxAttempts, CheckInterval)
+	_, err = goethereumhelper.WaitForTransactionProcessing(client, trx, MaxAttempts, CheckInterval)
 	if err != nil {
 		log.Fatalln("It was not possible to validator to validate persona's data. Error: ", err.Error())
 		return
@@ -288,7 +288,7 @@ func main() {
 		log.Fatalln("It was not possible to submit a new data order to persona. Error: ", err.Error())
 		return
 	}
-	_, err = goethereumhelper.WaitForTransctionProcessing(client, trx, MaxAttempts, CheckInterval)
+	_, err = goethereumhelper.WaitForTransactionProcessing(client, trx, MaxAttempts, CheckInterval)
 	if err != nil {
 		log.Fatalln("It was not possible to consumer to ask persona's data. Error: ", err.Error())
 		return
@@ -313,7 +313,7 @@ func main() {
 		log.Fatalln("It was not possible to submit the data ordered by the consumer. Error: ", err.Error())
 		return
 	}
-	_, err = goethereumhelper.WaitForTransctionProcessing(client, trx, MaxAttempts, CheckInterval)
+	_, err = goethereumhelper.WaitForTransactionProcessing(client, trx, MaxAttempts, CheckInterval)
 	if err != nil {
 		log.Fatalln("It was not possible to consumer to ask persona's data. Error: ", err.Error())
 		return
@@ -376,7 +376,7 @@ func showHelpMessage() {
 	log.Println(" ")
 	log.Println("--configFile Defines where plugin's config file is")
 	log.Println(" ")
-	log.Println("--zoeira Defines whether jokes message should appear while Bot is working")
+	log.Println("--zueira Defines whether jokes message should appear while Bot is working")
 	log.Println(" ")
 	os.Exit(0)
 }

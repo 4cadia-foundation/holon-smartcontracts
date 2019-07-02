@@ -31,7 +31,7 @@ func testAddPersonas(client *ethclient.Client, holon *proxycontract.Holon) {
 					log.Fatalln("It was not possible to submit a new persona. Error: ", err.Error())
 					return
 				}
-				_, err = goethereumhelper.WaitForTransctionProcessing(client, trx, MaxAttempts, CheckInterval)
+				_, err = goethereumhelper.WaitForTransactionProcessing(client, trx, MaxAttempts, CheckInterval)
 				if err != nil {
 					log.Fatalln("It was not possible to add a new persona. Error: ", err.Error())
 					return
@@ -78,7 +78,7 @@ func testAddDataToPersonas(client *ethclient.Client, holon *proxycontract.Holon)
 					log.Fatalln("It was not possible to submit a new data to a persona. Error: ", err.Error())
 					return
 				}
-				_, err = goethereumhelper.WaitForTransctionProcessing(client, trx, MaxAttempts, CheckInterval)
+				_, err = goethereumhelper.WaitForTransactionProcessing(client, trx, MaxAttempts, CheckInterval)
 				if err != nil {
 					log.Fatalln("It was not possible to add a new data to a persona. Error: ", err.Error())
 					return
