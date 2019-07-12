@@ -55,7 +55,7 @@ contract Holon {
     enum DataCategory { PlainText, IPFSHash, URI }
     
     event NewData(address persona, DataCategory dataCategory, uint infoCategory, string field);
-    event ValidateMe(address requester, address validator, DataCategory dataCategory, string field, string data);
+    event ValidateMe(address requester, address validator, DataCategory dataCategory, string field, string data, string uriConfirmationData);
     event ValidationResult(address persona, address validator, string field, ValidationChoices result);
     event LetMeSeeYourData(address requester, address persona, string field);
     event DeliverData(bool accepted, address persona, address consumer, DataCategory dataCategory, string field, string data);
@@ -130,7 +130,7 @@ contract Holon {
         return true;
     }
     
-    function askToValidate(address _validator, DataCategory _dataCategory, string memory _field, string memory _data) 
+    function askToValidate(address _validator, DataCategory _dataCategory, string memory _field, string memory _data, string memory _uriConfirmationData) 
         public
         payable
         returns (bool)
@@ -143,7 +143,7 @@ contract Holon {
             check = false;
         }
         require(check, "You must send a correct value");
-        emit ValidateMe(msg.sender, _validator, _dataCategory, _field, _data);
+        emit ValidateMe(msg.sender, _validator, _dataCategory, _field, _data, _uriConfirmationData);
         return true;
     }
     
