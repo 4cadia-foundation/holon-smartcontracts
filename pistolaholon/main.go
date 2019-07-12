@@ -215,7 +215,7 @@ func main() {
 		log.Fatalln("It was not possible to generate transactor to send transaction to blockchain. Error: ", err.Error())
 		return
 	}
-	trx, err = holon.AskToValidate(auth, validatorPersona01.PersonalAddress, 0, "email", "vicvictoriabarcelona@gmail.com")
+	trx, err = holon.AskToValidate(auth, validatorPersona01.PersonalAddress, 0, "email", "vicvictoriabarcelona@gmail.com", "https://novorg.net/wp-content/uploads/2017/06/novo-rg-com-chip-onde-tirar.jpg")
 	if err != nil {
 		log.Fatalln("It was not possible to submit a new validator. Error: ", err.Error())
 		return

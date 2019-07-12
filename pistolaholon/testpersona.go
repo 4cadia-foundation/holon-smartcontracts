@@ -47,7 +47,7 @@ func testAddPersonas(client *ethclient.Client, holon *proxycontract.Holon) {
 					log.Fatalln("It was not possible to get the email from the new added persona. Error: ", err.Error())
 					return
 				}
-				log.Printf("Persona added %+v\n\n", pData)
+				log.Printf("+Persona at transaction %s added %+v\n\n", trx.Hash().Hex(), pData)
 			} else {
 				continue
 			}
@@ -88,7 +88,7 @@ func testAddDataToPersonas(client *ethclient.Client, holon *proxycontract.Holon)
 					log.Fatalln("It was not possible to get the email from the new added persona. Error: ", err.Error())
 					return
 				}
-				log.Printf("    Persona %s data %s included to her profile %#v\n", persona.Address.Hex(), dataInfo.Field, pData)
+				log.Printf("    *Persona %s data %s included at transaction %s to her profile %#v\n", persona.Address.Hex(), dataInfo.Field, trx.Hash().Hex(), pData)
 			}
 		}
 	}
