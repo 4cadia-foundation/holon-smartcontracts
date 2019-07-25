@@ -34,7 +34,7 @@ contract Holon {
         uint pendingDataDeliver;
         bool exists;
         mapping(string => Info) personalInfo;
-        
+        string[] fields;        
     }
     
     function correctPrice (ValidationCostStrategy _strategy, uint valueInformed) 
@@ -77,6 +77,7 @@ contract Holon {
         p.personalAddress = msg.sender;
         p.pendingDataDeliver = 0;
         p.exists = true;
+        p.fields.push(_field);
         
         Info storage i = p.personalInfo[_field];
         i.infoCategoryCode = _infoCode;
@@ -85,6 +86,7 @@ contract Holon {
         i.data = _data;
         i.price = _price;
         i.exists = true;
+
         emit NewData(msg.sender, _dataCategory, _infoCode, _field);
         return true;
     }
@@ -104,6 +106,7 @@ contract Holon {
         i.data = _data;
         i.price = _price;
         i.exists = true;
+        p.fields.push(_field);
         emit NewData(msg.sender, _dataCategory, _infoCode, _field);
         return true;
     }
@@ -189,6 +192,26 @@ contract Holon {
         Info memory i = p.personalInfo[_field];
         return (i.field, i.data, i.dataCategory, i.reputation, i.validations.length, i.price);
     }
+
+    function getPersonaDataByFieldIndex(address _address, uint _fieldIndex)
+        public
+        view
+        returns (string memory, string memory, DataCategory, uint, uint, uint)
+    {
+        Persona storage p = members[_address];
+        string memory field = p.fields[_fieldIndex];
+        Info memory i = p.personalInfo[field];
+        return (i.field, i.data, i.dataCategory, i.reputation, i.validations.length, i.price);
+    }
+
+    function getPersonaNumberOfFields(address _address)
+        public
+        view
+        returns (uint)
+    {
+        Persona storage p = members[_address];        
+        return (p.fields.length);
+    }
     
     function getPersonaDataValidatorDetails(address _address, string memory _field, uint validatorIndex)
         public
@@ -233,6 +256,23 @@ contract Holon {
         p.pendingDataDeliver--;
         emit DeliverData(_accept, msg.sender, _address, _dataCategory, _field, _data);
         return true;
+    }
+
+    function score(address _personaAddress)
+        public
+        view
+        returns (uint, uint) 
+    {
+        Persona storage p = members[_personaAddress];
+        require(p.exists, "This persona is not registered");
+        uint validations = 0;
+        Info memory info;
+        for (uint i=0; i<p.fields.length; i++) {
+            string memory field = p.fields[i]; 
+            info = p.personalInfo[field];
+            validations = validations + info.validations.length;
+        }
+        return (p.fields.length, validations);
     }
         
 }

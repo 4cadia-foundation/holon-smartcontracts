@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"context"
 	"flag"
+	"fmt"
 	"log"
 	"math/big"
 	"os"
@@ -20,7 +21,7 @@ var pluginConfigFile PluginConfig
 
 func main() {
 
-	stage := flag.Int("stage", 10, "Defines the limit where the Bot should reach")
+	stage := flag.Int("stage", 11, "Defines the limit where the Bot should reach")
 	showHelp := flag.Bool("help", false, "Show Bot's help")
 	zueiraMode := flag.Bool("zueira", false, "Show Bot's help")
 	configPath := flag.String("destConfigFile", "", "Defines where plugin's config file is")
@@ -40,29 +41,29 @@ func main() {
 	for scanner.Scan() { // internally, it advances token based on sperator
 		log.Println(scanner.Text()) // token in unicode-char
 	}
-	log.Println("")
+	fmt.Print("\n\r")
 	log.Println("                                Bravo Pistola Mock Data Generator")
-	log.Println("")
+	fmt.Print("\n\r")
 
 	if *showHelp {
 		showHelpMessage()
 	}
 
 	if isZoeiraModeOn {
-		log.Println("")
+		fmt.Print("\n\r")
 		log.Println("Senta que lá vem história....")
-		log.Println("")
+		fmt.Print("\n\r")
 	}
 
 	configFileName = *configPath
 	if len(configFileName) > 4 {
 		log.Println("ConfigPath ", configFileName)
-		log.Println("")
+		fmt.Print("\n\r")
 	}
 
-	log.Println("")
+	fmt.Print("\n\r")
 	log.Println("Connecting to Pistola Local Network...")
-	log.Println("")
+	fmt.Print("\n\r")
 	// client, err := goethereumhelper.GetCustomNetworkClient("http://127.0.0.1:8545")
 	client, err := goethereumhelper.GetRinkebyClient()
 	if err != nil {
@@ -76,9 +77,9 @@ func main() {
 	}
 	log.Println("Connected to network ID ", networkID)
 
-	log.Println("")
+	fmt.Print("\n\r")
 	log.Println("Loading testing data...")
-	log.Println("")
+	fmt.Print("\n\r")
 	err = loadConfig()
 	if err != nil {
 		log.Fatalln("Error: ", err.Error())
@@ -197,9 +198,9 @@ func main() {
 	log.Printf("Validator added %#v\n", validator01)
 
 	if isZoeiraModeOn {
-		log.Println("")
+		fmt.Print("\n\r")
 		log.Println("Ainda tá aí? Dorme não....")
-		log.Println("")
+		fmt.Print("\n\r")
 	}
 
 	stageStep = moveFowardStage(stageStep)
@@ -320,10 +321,31 @@ func main() {
 	}
 	log.Println("Data delivered.")
 
+	stageStep = moveFowardStage(stageStep)
+
+	/*
+
+		Obtain Persona's score
+
+	*/
+	log.Printf("Obtaining persona's %s score...\n", HolonConfigData.Personas[0].Address.Hex())
+	// auth, err = getTransactor(client, "persona", 0)
+	// if err != nil {
+	// 	log.Fatalln("It was not possible to generate transactor to obtain persona's score. Error: ", err.Error())
+	// 	return
+	// }
+	fields, validations, err := holon.Score(nil, HolonConfigData.Personas[0].Address)
+	if err != nil {
+		log.Fatalln("It was not possible to obtain persona's score. Error: ", err.Error())
+		return
+	}
+	result := new(big.Int)
+	log.Println("Persona's %s score is ", result.Add(fields, validations))
+
 	if isZoeiraModeOn {
-		log.Println("")
+		fmt.Print("\n\r")
 		log.Println("É TETRA!! É TETRA!! É TETRA!! É TETRA!! É TETRA!! É TETRA!! É TETRA!! É TETRA!! É TETRA!! É TETRA!! É TETRA!! É TETRA!!")
-		log.Println("")
+		fmt.Print("\n\r")
 	}
 
 	finishTests()
@@ -341,9 +363,9 @@ func finishTests() {
 		}
 	}
 
-	log.Println("")
+	fmt.Print("\n\r")
 	log.Println("Tests finished.")
-	log.Println("")
+	fmt.Print("\n\r")
 	os.Exit(0)
 }
 
@@ -373,6 +395,7 @@ func showHelpMessage() {
 	log.Println("    _ 08 Validator validates her data")
 	log.Println("    _ 09 Consumer asks to Persona to consume her data")
 	log.Println("    _ 10 Persona delivers her data to Consumer")
+	log.Println("    _ 11 Obtain persona's score")
 	log.Println(" ")
 	log.Println("--configFile Defines where plugin's config file is")
 	log.Println(" ")

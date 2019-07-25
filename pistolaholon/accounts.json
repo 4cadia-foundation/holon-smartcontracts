@@ -19,21 +19,21 @@
     },
     "personas": [
         {
-            "address" : "0xc3d8DFCA4b2387D1d0Bf8A7C4D7B361a26863AAC",
-            "privatekey" : "FA757D8303BD902FB2E04E96C349023131050E321C04B2C3635839379D5B966B",
+            "address" : "0x8b542882b80EE26B004E279aA547e6FF6F6B2974",
+            "privatekey" : "4f711082ece7191a111ab86bc46ba93ba0b0c34c2b5f7d6d585a1e8f3832e576",
             "personaData" : [
                 {
                     "infoCode": 1,
                     "dataCategory": 0,
                     "field": "email",
-                    "data": "emailPersona_01@email.com",
+                    "data": "jeff_01@email.com",
                     "price": 0
                 },
                 {
                     "infoCode": 1,
                     "dataCategory": 0,
                     "field": "name",
-                    "data": "José Persona 01",
+                    "data": "Jeff Persona",
                     "price": 0
                 }
             ]
