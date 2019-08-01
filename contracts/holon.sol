@@ -63,6 +63,7 @@ contract Holon {
     mapping(uint => string) public infoCategories;    
     mapping(address => Persona) public members;
     mapping(address => Validator) public holonValidators;
+    address[] public holonValidatorsList;
     
     constructor () public payable {
         
@@ -121,6 +122,7 @@ contract Holon {
         Persona memory p = members[msg.sender];
         require(p.exists, "You must be a persona within Holon to become a validator");
         holonValidators[msg.sender] = Validator(msg.sender, 0, _strategy, _price, true);
+        holonValidatorsList.push(msg.sender);
         return true;
     }
     
