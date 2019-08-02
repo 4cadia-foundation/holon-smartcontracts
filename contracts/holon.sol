@@ -276,5 +276,14 @@ contract Holon {
         }
         return (p.fields.length, validations);
     }
+
+    function getTotalValidators()
+        public
+        view
+        returns (uint) 
+    {        
+        return holonValidatorsList.length;
+    }
+
         
 }
