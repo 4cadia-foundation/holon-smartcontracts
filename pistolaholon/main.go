@@ -139,7 +139,23 @@ func main() {
 		log.Fatalln("It was not possible to generate transactor to send transaction to blockchain. Error: ", err.Error())
 		return
 	}
-	trx, err = holon.AddPersona(auth, big.NewInt(1), uint8(0), "email", "compliance@atlasproj.com", big.NewInt(0))
+	trx, err = holon.AddPersona(auth, big.NewInt(1), uint8(0), HolonConfigData.Validators[0].PersonaDatas[0].Field, HolonConfigData.Validators[0].PersonaDatas[0].Data, big.NewInt(0))
+	if err != nil {
+		log.Fatalln("It was not possible to submit a new persona. Error: ", err.Error())
+		return
+	}
+	txReceipt, err = goethereumhelper.WaitForTransactionProcessing(client, trx, MaxAttempts, CheckInterval)
+	if err != nil {
+		log.Fatalln("It was not possible to add a new persona. Error: ", err.Error())
+		return
+	}
+	log.Println("Adding data to the Validator as Persona", HolonConfigData.Validators[0].Address.Hex(), "....")
+	auth, err = getTransactor(client, "validator", 0)
+	if err != nil {
+		log.Fatalln("It was not possible to generate transactor to send transaction to blockchain. Error: ", err.Error())
+		return
+	}
+	trx, err = holon.AddData(auth, big.NewInt(1), uint8(0), HolonConfigData.Validators[0].PersonaDatas[1].Field, HolonConfigData.Validators[0].PersonaDatas[1].Data, big.NewInt(0))
 	if err != nil {
 		log.Fatalln("It was not possible to submit a new persona. Error: ", err.Error())
 		return
