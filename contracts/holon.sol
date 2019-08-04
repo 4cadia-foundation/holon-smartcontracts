@@ -1,4 +1,4 @@
-pragma solidity 0.5.9;
+pragma solidity 0.5.10;
 
 contract Holon {
     
@@ -54,11 +54,11 @@ contract Holon {
     enum ValidationCostStrategy { ForFree, Charged, Rebate }
     enum DataCategory { PlainText, IPFSHash, URI }
     
-    event NewData(address indexed persona, DataCategory dataCategory, uint infoCategory, string indexed field);
+    event NewData(address indexed persona, DataCategory dataCategory, uint infoCategory, string field);
     event ValidateMe(address indexed requester, address indexed validator, DataCategory dataCategory, string field, string data, string uriConfirmationData);
-    event ValidationResult(address indexed persona, address indexed validator, string indexed field, ValidationChoices result);
+    event ValidationResult(address indexed persona, address indexed validator, string field, ValidationChoices result);
     event LetMeSeeYourData(address indexed requester, address indexed persona, string field);
-    event DeliverData(bool accepted, address indexed persona, address indexed consumer, DataCategory dataCategory, string indexed field, string data);
+    event DeliverData(bool accepted, address indexed persona, address indexed consumer, DataCategory dataCategory, string field, string data);
     
     mapping(uint => string) public infoCategories;    
     mapping(address => Persona) public members;

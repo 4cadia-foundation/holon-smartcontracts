@@ -87,7 +87,7 @@ func getTransactor(client *ethclient.Client, actor string, index int) (auth *bin
 	//auth.GasPrice = gasPrice.Mul(gasPrice, big.NewInt(2))
 	gasPrice = big.NewInt(1000000000)
 	auth.GasPrice = gasPrice
-	auth.GasLimit = 4000000
+	auth.GasLimit = 6000000
 	return
 }
 
