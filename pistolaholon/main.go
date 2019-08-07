@@ -286,6 +286,10 @@ func main() {
 		return
 	}
 	log.Printf("Validator new status %#v\n", validator01)
+	if validator01.Reputation.Int64() < 1 {
+		log.Fatalln("      Validator's reputation has not changed.")
+		return
+	}
 
 	stageStep = moveFowardStage(stageStep)
 

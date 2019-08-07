@@ -157,7 +157,7 @@ contract Holon {
         payable
         returns (bool)
     {
-        Validator memory v = holonValidators[msg.sender];
+        Validator storage v = holonValidators[msg.sender];
         if (v.strategy == ValidationCostStrategy.Charged) {
             require(correctPrice(v.strategy, msg.value), "You must send a correct value");
         }
