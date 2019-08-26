@@ -27,6 +27,7 @@ contract Holon {
         bool exists;
         Stamp[] validations;
         ValidationChoices lastStatus;
+        string proofUrl;
         mapping(address => Validator) validators;
     }
     
@@ -137,7 +138,7 @@ contract Holon {
         return true;
     }
     
-    function askToValidate(address _validator, string memory _field) 
+    function askToValidate(address _validator, string memory _field,string memory _proofUrl) 
         public
         payable
         returns (bool)
@@ -158,6 +159,7 @@ contract Holon {
         require(fieldInfo.exists, "Persona field not found");
 
         fieldInfo.lastStatus = ValidationChoices.ValidationPending;
+        fieldInfo.proofUrl = _proofUrl;
         Stamp memory pendingStamp = Stamp(msg.sender, fieldInfo.lastStatus, block.timestamp, block.number);
         fieldInfo.validations.push(pendingStamp);
 
