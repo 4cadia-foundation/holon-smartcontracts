@@ -26,6 +26,7 @@ contract Holon {
         DataCategory dataCategory;
         bool exists;
         Stamp[] validations;
+        ValidationChoices lastStatus;
         mapping(address => Validator) validators;
     }
     
@@ -36,7 +37,7 @@ contract Holon {
         mapping(string => Info) personalInfo;
         string[] fields;        
     }
-    
+
     function correctPrice (ValidationCostStrategy _strategy, uint valueInformed) 
         public 
         pure
@@ -50,12 +51,10 @@ contract Holon {
         return true;
     }
     
-    enum ValidationChoices { Validated, NotValidated, CannotEvaluate }
+    enum ValidationChoices { Validated, NotValidated, CannotEvaluate, NewData, ValidationPending }
     enum ValidationCostStrategy { ForFree, Charged, Rebate }
     enum DataCategory { PlainText, IPFSHash, URI }
-    
     event NewData(address indexed persona, DataCategory dataCategory, uint infoCategory, string field);
-    event ValidateMe(address indexed requester, address indexed validator, DataCategory dataCategory, string field, string data, string uriConfirmationData);
     event ValidationResult(address indexed persona, address indexed validator, string field, ValidationChoices result);
     event LetMeSeeYourData(address indexed requester, address indexed persona, string field);
     event DeliverData(bool accepted, address indexed persona, address indexed consumer, DataCategory dataCategory, string field, string data);
@@ -87,7 +86,8 @@ contract Holon {
         i.data = _data;
         i.price = _price;
         i.exists = true;
-
+        i.lastStatus = ValidationChoices.NewData;
+        
         emit NewData(msg.sender, _dataCategory, _infoCode, _field);
         return true;
     }
@@ -107,6 +107,7 @@ contract Holon {
         i.data = _data;
         i.price = _price;
         i.exists = true;
+        i.lastStatus = ValidationChoices.NewData;
         p.fields.push(_field);
         emit NewData(msg.sender, _dataCategory, _infoCode, _field);
         return true;
@@ -118,7 +119,8 @@ contract Holon {
         returns (bool)
     {
         require(correctPrice(_strategy, _price), "Your charge or rewards strategy does not match with the price informed");
-        require(msg.value >= 1 szabo, "You have to pay 1 ether to become a validator");
+        //descomentar
+        // require(msg.value >= 1 szabo, "You have to pay 1 ether to become a validator");
         Persona memory p = members[msg.sender];
         require(p.exists, "You must be a persona within Holon to become a validator");
         holonValidators[msg.sender] = Validator(msg.sender, 0, _strategy, _price, true);
@@ -135,7 +137,7 @@ contract Holon {
         return true;
     }
     
-    function askToValidate(address _validator, DataCategory _dataCategory, string memory _field, string memory _data, string memory _uriConfirmationData) 
+    function askToValidate(address _validator, string memory _field) 
         public
         payable
         returns (bool)
@@ -148,10 +150,35 @@ contract Holon {
             check = false;
         }
         require(check, "You must send a correct value");
-        emit ValidateMe(msg.sender, _validator, _dataCategory, _field, _data, _uriConfirmationData);
+        
+        Persona storage persona = members[msg.sender];
+        require(persona.exists, "Persona not found");
+
+        Info storage fieldInfo = persona.personalInfo[_field];
+        require(fieldInfo.exists, "Persona field not found");
+
+        fieldInfo.lastStatus = ValidationChoices.ValidationPending;
+        Stamp memory pendingStamp = Stamp(msg.sender, fieldInfo.lastStatus, block.timestamp, block.number);
+        fieldInfo.validations.push(pendingStamp);
+
         return true;
     }
-    
+
+    function GetFieldLastStatus(string memory _field)
+        public
+        view
+        returns (ValidationChoices)
+        {        
+            //aki
+            Persona storage persona = members[msg.sender];
+            require(persona.exists, "Persona not found");
+
+            Info storage fieldInfo = persona.personalInfo[_field];
+            require(fieldInfo.exists, "Persona field not found");
+
+            return fieldInfo.lastStatus;
+        }
+
     function validate(address _persona, string memory _field, ValidationChoices _status) 
         public
         payable
@@ -168,6 +195,7 @@ contract Holon {
         require(check, "You must send a correct value");
         Persona storage p = members[_persona];
         Info storage i = p.personalInfo[_field];
+        i.lastStatus = _status;
         i.validators[msg.sender] = v;
         Stamp memory s = Stamp(msg.sender, _status, block.timestamp, block.number);
         i.validations.push(s);
