@@ -170,7 +170,6 @@ contract Holon {
         view
         returns (ValidationChoices)
         {        
-            //aki
             Persona storage persona = members[msg.sender];
             require(persona.exists, "Persona not found");
 
