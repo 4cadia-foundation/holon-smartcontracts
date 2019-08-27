@@ -56,6 +56,7 @@ contract Holon {
     enum ValidationCostStrategy { ForFree, Charged, Rebate }
     enum DataCategory { PlainText, IPFSHash, URI }
     event NewData(address indexed persona, DataCategory dataCategory, uint infoCategory, string field);
+    event ValidateMe(address indexed requester, address indexed validator, DataCategory dataCategory, string field, string data, string uriConfirmationData);
     event ValidationResult(address indexed persona, address indexed validator, string field, ValidationChoices result);
     event LetMeSeeYourData(address indexed requester, address indexed persona, string field);
     event DeliverData(bool accepted, address indexed persona, address indexed consumer, DataCategory dataCategory, string field, string data);
@@ -68,7 +69,7 @@ contract Holon {
     constructor () public payable {
         
     }
-    
+
     function addPersona(uint _infoCode, DataCategory _dataCategory, string memory _field, string memory _data, uint _price) 
         public
         returns (bool)
@@ -161,7 +162,8 @@ contract Holon {
         fieldInfo.proofUrl = _proofUrl;
         Stamp memory pendingStamp = Stamp(msg.sender, fieldInfo.lastStatus, block.timestamp, block.number);
         fieldInfo.validations.push(pendingStamp);
-
+        
+        emit ValidateMe(msg.sender, _validator, fieldInfo.dataCategory, _field, fieldInfo.data, _proofUrl);
         return true;
     }
 
@@ -265,6 +267,7 @@ contract Holon {
         Info memory i = p.personalInfo[_field];
         require(msg.value >= i.price, "You must pay");
         p.pendingDataDeliver++;
+
         emit LetMeSeeYourData(msg.sender, _address, _field);
         return true;
     }
