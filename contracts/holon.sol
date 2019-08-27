@@ -1,4 +1,5 @@
 pragma solidity 0.5.10;
+pragma experimental ABIEncoderV2;
 
 contract Holon {
     
@@ -39,6 +40,11 @@ contract Holon {
         string[] fields;        
     }
 
+    struct RequestedField {
+        address consumer;
+        string field;
+    }
+
     function correctPrice (ValidationCostStrategy _strategy, uint valueInformed) 
         public 
         pure
@@ -64,10 +70,25 @@ contract Holon {
     mapping(uint => string) public infoCategories;    
     mapping(address => Persona) public members;
     mapping(address => Validator) public holonValidators;
+    mapping (address => RequestedField[]) personaRequestedFields;
+    mapping (address => mapping (address => mapping (string => int))) personaAllowedFields;
+
     address[] public holonValidatorsList;
     
     constructor () public payable {
         
+    }
+    function removeRequestedField(address persona, uint index) 
+    private
+    {
+        if (!index) 
+            return;
+
+        RequestedField[] storage requestedFields = personaRequestedFields[persona];
+        if (requestedFields.length > 1)
+            requestedFields[index] = requestedFields[requestedFields.length - 1];
+
+        requestedFields.length--;            
     }
 
     function addPersona(uint _infoCode, DataCategory _dataCategory, string memory _field, string memory _data, uint _price) 
@@ -269,10 +290,32 @@ contract Holon {
         p.pendingDataDeliver++;
 
         emit LetMeSeeYourData(msg.sender, _address, _field);
+        uint index = personaRequestedFields[_address].push(RequestedField(msg.sender, _field));
+        personaAllowedFields[_address][msg.sender][_field] = index;
+
         return true;
     }
+
+    function GetRequestedFields()
+    public
+    view
+    returns (string[], string[])
+    {
+        RequestedField[] memory requestedFields =  personaRequestedFields[msg.sender];
+        uint size = requestedFields.length;
+        string[] memory consumersName = new string[](size);
+        string[] memory fields = new string[](size);
+        for (uint fieldIndex = 0; fieldIndex < size; fieldIndex++) {
+            Persona memory consumer = members[requestedFields[fieldIndex].consumer];
+            Info memory consumerName = consumer.personalInfo["name"].data;
+            consumers[fieldIndex] = consumerName;
+            fields[fieldIndex] = requestedFields[fieldIndex].field;
+        }
+
+        return (consumers, fields);
+    }
     
-    function deliverDecryptedData(bool _accept, address payable _address, DataCategory _dataCategory, string memory _field, string memory _data) 
+    function deliverDecryptedData(bool _accept, address payable _address, string memory _field) 
         public
         returns (bool)
     {
@@ -288,6 +331,11 @@ contract Holon {
         }
         p.pendingDataDeliver--;
         emit DeliverData(_accept, msg.sender, _address, _dataCategory, _field, _data);
+
+        uint fieldIndex = personaAllowedFields[msg.sender][_address][_field];
+        //personaAllowedFields => set para -1 allow / -2 deny
+        removeRequestedField(msg.sender, fieldIndex);
+
         return true;
     }
 
