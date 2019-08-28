@@ -297,20 +297,23 @@ contract Holon {
     function GetRequestedFields()
     public
     view
-    returns (string[] memory, string[] memory)
+    returns (address[] memory, string[] memory, string[] memory)
     {
         RequestedField[] memory requestedFields =  personaRequestedFields[msg.sender];
         uint size = requestedFields.length;
+        address[] memory consumersAddress = new address[](size);
         string[] memory consumersName = new string[](size);
         string[] memory fields = new string[](size);
         for (uint fieldIndex = 0; fieldIndex < size; fieldIndex++) {
-            Persona storage consumer = members[requestedFields[fieldIndex].consumer];
+            address consumerAddress = requestedFields[fieldIndex].consumer;
+            Persona storage consumer = members[consumerAddress];
             string memory consumerName = consumer.personalInfo["name"].data;
+            consumersAddress[fieldIndex] = consumerAddress;
             consumersName[fieldIndex] = consumerName;
             fields[fieldIndex] = requestedFields[fieldIndex].field;
         }
 
-        return (consumersName, fields);
+        return (consumersAddress, consumersName, fields);
     }
 
     function fieldIsAllowed(address persona, string memory _field)
@@ -323,7 +326,7 @@ contract Holon {
 
     function getDeliverFieldChoiceCode(DeliverFieldChoices deliverChoice)
     private
-    view
+    pure
     returns (uint)
     {
         uint choiceCode = uint(-2); 
