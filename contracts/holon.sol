@@ -57,8 +57,9 @@ contract Holon {
         }
         return true;
     }
-    
+
     enum ValidationChoices { Validated, NotValidated, CannotEvaluate, NewData, ValidationPending }
+    enum DeliverFieldChoices { Allow, Deny }
     enum ValidationCostStrategy { ForFree, Charged, Rebate }
     enum DataCategory { PlainText, IPFSHash, URI }
     event NewData(address indexed persona, DataCategory dataCategory, uint infoCategory, string field);
@@ -71,7 +72,7 @@ contract Holon {
     mapping(address => Persona) public members;
     mapping(address => Validator) public holonValidators;
     mapping (address => RequestedField[]) personaRequestedFields;
-    mapping (address => mapping (address => mapping (string => int))) personaAllowedFields;
+    mapping (address => mapping (address => mapping (string => uint))) personaAllowedFields;
 
     address[] public holonValidatorsList;
     
@@ -81,9 +82,6 @@ contract Holon {
     function removeRequestedField(address persona, uint index) 
     private
     {
-        if (!index) 
-            return;
-
         RequestedField[] storage requestedFields = personaRequestedFields[persona];
         if (requestedFields.length > 1)
             requestedFields[index] = requestedFields[requestedFields.length - 1];
@@ -299,22 +297,41 @@ contract Holon {
     function GetRequestedFields()
     public
     view
-    returns (string[], string[])
+    returns (string[] memory, string[] memory)
     {
         RequestedField[] memory requestedFields =  personaRequestedFields[msg.sender];
         uint size = requestedFields.length;
         string[] memory consumersName = new string[](size);
         string[] memory fields = new string[](size);
         for (uint fieldIndex = 0; fieldIndex < size; fieldIndex++) {
-            Persona memory consumer = members[requestedFields[fieldIndex].consumer];
-            Info memory consumerName = consumer.personalInfo["name"].data;
-            consumers[fieldIndex] = consumerName;
+            Persona storage consumer = members[requestedFields[fieldIndex].consumer];
+            string memory consumerName = consumer.personalInfo["name"].data;
+            consumersName[fieldIndex] = consumerName;
             fields[fieldIndex] = requestedFields[fieldIndex].field;
         }
 
-        return (consumers, fields);
+        return (consumersName, fields);
     }
-    
+
+    function fieldIsAllowed(address persona, string memory _field)
+    public
+    view
+    returns (bool)
+    {
+        return personaAllowedFields[persona][msg.sender][_field] == getDeliverFieldChoiceCode(DeliverFieldChoices.Allow);
+    }
+
+    function getDeliverFieldChoiceCode(DeliverFieldChoices deliverChoice)
+    private
+    view
+    returns (uint)
+    {
+        uint choiceCode = uint(-2); 
+        if(deliverChoice == DeliverFieldChoices.Allow)
+            choiceCode = uint(-1);
+        return choiceCode;
+    }
+
     function deliverDecryptedData(bool _accept, address payable _address, string memory _field) 
         public
         returns (bool)
@@ -322,18 +339,22 @@ contract Holon {
         Persona storage p = members[msg.sender];
         require(p.exists, "This persona is not registered");
         Info memory i = p.personalInfo[_field];
+        uint deliverChoice = getDeliverFieldChoiceCode(DeliverFieldChoices.Allow);
+
         if (i.price > 0) {
             if (!_accept) {
                 _address.transfer(i.price);
             } else {
                 p.personalAddress.transfer(i.price);
+                deliverChoice = getDeliverFieldChoiceCode(DeliverFieldChoices.Deny);
             }
         }
         p.pendingDataDeliver--;
-        emit DeliverData(_accept, msg.sender, _address, _dataCategory, _field, _data);
+
+        emit DeliverData(_accept, msg.sender, _address, i.dataCategory, _field, i.data);
 
         uint fieldIndex = personaAllowedFields[msg.sender][_address][_field];
-        //personaAllowedFields => set para -1 allow / -2 deny
+        personaAllowedFields[msg.sender][_address][_field] = deliverChoice;
         removeRequestedField(msg.sender, fieldIndex);
 
         return true;
