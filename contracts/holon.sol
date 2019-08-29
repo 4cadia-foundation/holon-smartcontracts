@@ -1,4 +1,5 @@
 pragma solidity 0.5.10;
+pragma experimental ABIEncoderV2;
 
 contract Holon {
     
@@ -39,6 +40,11 @@ contract Holon {
         string[] fields;        
     }
 
+    struct RequestedField {
+        address consumer;
+        string field;
+    }
+
     function correctPrice (ValidationCostStrategy _strategy, uint valueInformed) 
         public 
         pure
@@ -51,8 +57,9 @@ contract Holon {
         }
         return true;
     }
-    
+
     enum ValidationChoices { Validated, NotValidated, CannotEvaluate, NewData, ValidationPending }
+    enum DeliverFieldChoices { Allow, Deny }
     enum ValidationCostStrategy { ForFree, Charged, Rebate }
     enum DataCategory { PlainText, IPFSHash, URI }
     event NewData(address indexed persona, DataCategory dataCategory, uint infoCategory, string field);
@@ -64,10 +71,22 @@ contract Holon {
     mapping(uint => string) public infoCategories;    
     mapping(address => Persona) public members;
     mapping(address => Validator) public holonValidators;
+    mapping (address => RequestedField[]) personaRequestedFields;
+    mapping (address => mapping (address => mapping (string => uint))) personaAllowedFields;
+
     address[] public holonValidatorsList;
     
     constructor () public payable {
         
+    }
+    function removeRequestedField(address persona, uint index) 
+    private
+    {
+        RequestedField[] storage requestedFields = personaRequestedFields[persona];
+        if (requestedFields.length > 1)
+            requestedFields[index] = requestedFields[requestedFields.length - 1];
+
+        requestedFields.length--;            
     }
 
     function addPersona(uint _infoCode, DataCategory _dataCategory, string memory _field, string memory _data, uint _price) 
@@ -269,25 +288,88 @@ contract Holon {
         p.pendingDataDeliver++;
 
         emit LetMeSeeYourData(msg.sender, _address, _field);
+        uint index = personaRequestedFields[_address].push(RequestedField(msg.sender, _field));
+        personaAllowedFields[_address][msg.sender][_field] = index;
+
         return true;
     }
-    
-    function deliverDecryptedData(bool _accept, address payable _address, DataCategory _dataCategory, string memory _field, string memory _data) 
+
+    function GetRequestedFields()
+    public
+    view
+    returns (address[] memory, string[] memory, string[] memory)
+    {
+        RequestedField[] memory requestedFields =  personaRequestedFields[msg.sender];
+        uint size = requestedFields.length;
+        address[] memory consumersAddress = new address[](size);
+        string[] memory consumersName = new string[](size);
+        string[] memory fields = new string[](size);
+        for (uint fieldIndex = 0; fieldIndex < size; fieldIndex++) {
+            address consumerAddress = requestedFields[fieldIndex].consumer;
+            Persona storage consumer = members[consumerAddress];
+            string memory consumerName = consumer.personalInfo["name"].data;
+            consumersAddress[fieldIndex] = consumerAddress;
+            consumersName[fieldIndex] = consumerName;
+            fields[fieldIndex] = requestedFields[fieldIndex].field;
+        }
+
+        return (consumersAddress, consumersName, fields);
+    }
+
+    function getAllowedField(address personaAddress, string memory _field)
+    public
+    view
+    returns (bool, string memory)
+    {
+        bool isAllowed = personaAllowedFields[personaAddress][msg.sender][_field] == getDeliverFieldChoiceCode(DeliverFieldChoices.Allow);
+        string memory fieldData;
+        if(isAllowed) {
+            Persona storage persona = members[personaAddress];
+            require(persona.exists, "This persona is not registered");
+            Info storage fieldInfo = persona.personalInfo[_field];
+            require(fieldInfo.exists, "Invalid field");
+            fieldData = fieldInfo.data;
+        }
+
+        return (isAllowed, fieldData);
+    }
+
+    function getDeliverFieldChoiceCode(DeliverFieldChoices deliverChoice)
+    private
+    pure
+    returns (uint)
+    {
+        uint choiceCode = uint(-2); 
+        if(deliverChoice == DeliverFieldChoices.Allow)
+            choiceCode = uint(-1);
+        return choiceCode;
+    }
+
+    function deliverDecryptedData(bool _accept, address payable _address, string memory _field) 
         public
         returns (bool)
     {
         Persona storage p = members[msg.sender];
         require(p.exists, "This persona is not registered");
         Info memory i = p.personalInfo[_field];
+        uint deliverChoice = getDeliverFieldChoiceCode(DeliverFieldChoices.Allow);
+
         if (i.price > 0) {
             if (!_accept) {
                 _address.transfer(i.price);
             } else {
                 p.personalAddress.transfer(i.price);
+                deliverChoice = getDeliverFieldChoiceCode(DeliverFieldChoices.Deny);
             }
         }
         p.pendingDataDeliver--;
-        emit DeliverData(_accept, msg.sender, _address, _dataCategory, _field, _data);
+
+        emit DeliverData(_accept, msg.sender, _address, i.dataCategory, _field, i.data);
+
+        uint fieldIndex = personaAllowedFields[msg.sender][_address][_field];
+        personaAllowedFields[msg.sender][_address][_field] = deliverChoice;
+        removeRequestedField(msg.sender, fieldIndex);
+
         return true;
     }
 
