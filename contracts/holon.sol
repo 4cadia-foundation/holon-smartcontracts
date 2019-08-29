@@ -316,12 +316,22 @@ contract Holon {
         return (consumersAddress, consumersName, fields);
     }
 
-    function fieldIsAllowed(address persona, string memory _field)
+    function getAllowedField(address personaAddress, string memory _field)
     public
     view
-    returns (bool)
+    returns (bool, string memory)
     {
-        return personaAllowedFields[persona][msg.sender][_field] == getDeliverFieldChoiceCode(DeliverFieldChoices.Allow);
+        bool isAllowed = personaAllowedFields[personaAddress][msg.sender][_field] == getDeliverFieldChoiceCode(DeliverFieldChoices.Allow);
+        string memory fieldData;
+        if(isAllowed) {
+            Persona storage persona = members[personaAddress];
+            require(persona.exists, "This persona is not registered");
+            Info storage fieldInfo = persona.personalInfo[_field];
+            require(fieldInfo.exists, "Invalid field");
+            fieldData = fieldInfo.data;
+        }
+
+        return (isAllowed, fieldData);
     }
 
     function getDeliverFieldChoiceCode(DeliverFieldChoices deliverChoice)
