@@ -28,7 +28,6 @@ contract Holon {
         bool exists;
         Stamp[] validations;
         ValidationChoices lastStatus;
-        string proofUrl;
         mapping(address => Validator) validators;
     }
     
@@ -43,6 +42,7 @@ contract Holon {
     struct RequestedField {
         address consumer;
         string field;
+        bool exists;
     }
 
     function correctPrice (ValidationCostStrategy _strategy, uint valueInformed) 
@@ -178,7 +178,6 @@ contract Holon {
         require(fieldInfo.exists, "Persona field not found");
 
         fieldInfo.lastStatus = ValidationChoices.ValidationPending;
-        fieldInfo.proofUrl = _proofUrl;
         Stamp memory pendingStamp = Stamp(msg.sender, fieldInfo.lastStatus, block.timestamp, block.number);
         fieldInfo.validations.push(pendingStamp);
         
@@ -286,10 +285,17 @@ contract Holon {
         Info memory i = p.personalInfo[_field];
         require(msg.value >= i.price, "You must pay");
         p.pendingDataDeliver++;
-
         emit LetMeSeeYourData(msg.sender, _address, _field);
-        uint index = personaRequestedFields[_address].push(RequestedField(msg.sender, _field));
-        personaAllowedFields[_address][msg.sender][_field] = index;
+        
+        RequestedField[] storage requestedFields = personaRequestedFields[_address];
+        uint fieldIndex = personaAllowedFields[_address][msg.sender][_field];
+        RequestedField memory fieldData = requestedFields[fieldIndex];
+
+        if(fieldData.exists && equal(fieldData.field,_field))
+            return true;
+
+        uint newRequestIndex = requestedFields.push(RequestedField(msg.sender, _field, true));
+        personaAllowedFields[_address][msg.sender][_field] = newRequestIndex;
 
         return true;
     }
@@ -398,5 +404,7 @@ contract Holon {
         return holonValidatorsList.length;
     }
 
-        
+    function equal(string memory _a, string memory _b) private pure returns (bool) {
+        return (keccak256(abi.encodePacked((_a))) == keccak256(abi.encodePacked((_b))));
+    }
 }
