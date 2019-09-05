@@ -28,7 +28,6 @@ contract Holon {
         bool exists;
         Stamp[] validations;
         ValidationChoices lastStatus;
-        string proofUrl;
         mapping(address => Validator) validators;
     }
     
@@ -40,9 +39,15 @@ contract Holon {
         string[] fields;        
     }
 
-    struct RequestedField {
+    struct PendingRequestedField {
         address consumer;
         string field;
+    }
+
+    struct RequestedField {
+        bool isRequested;
+        uint fieldIndex;
+        bool isAllowed;
     }
 
     function correctPrice (ValidationCostStrategy _strategy, uint valueInformed) 
@@ -59,7 +64,7 @@ contract Holon {
     }
 
     enum ValidationChoices { Validated, NotValidated, CannotEvaluate, NewData, ValidationPending }
-    enum DeliverFieldChoices { Allow, Deny }
+
     enum ValidationCostStrategy { ForFree, Charged, Rebate }
     enum DataCategory { PlainText, IPFSHash, URI }
     event NewData(address indexed persona, DataCategory dataCategory, uint infoCategory, string field);
@@ -71,9 +76,8 @@ contract Holon {
     mapping(uint => string) public infoCategories;    
     mapping(address => Persona) public members;
     mapping(address => Validator) public holonValidators;
-    mapping (address => RequestedField[]) personaRequestedFields;
-    mapping (address => mapping (address => mapping (string => uint))) personaAllowedFields;
-
+    mapping (address => PendingRequestedField[]) public personaRequestedFields;
+    mapping (address => mapping (address => mapping (string => RequestedField))) public requestedFieldData;
     address[] public holonValidatorsList;
     
     constructor () public payable {
@@ -82,7 +86,7 @@ contract Holon {
     function removeRequestedField(address persona, uint index) 
     private
     {
-        RequestedField[] storage requestedFields = personaRequestedFields[persona];
+        PendingRequestedField[] storage requestedFields = personaRequestedFields[persona];
         if (requestedFields.length > 1)
             requestedFields[index] = requestedFields[requestedFields.length - 1];
 
@@ -178,7 +182,6 @@ contract Holon {
         require(fieldInfo.exists, "Persona field not found");
 
         fieldInfo.lastStatus = ValidationChoices.ValidationPending;
-        fieldInfo.proofUrl = _proofUrl;
         Stamp memory pendingStamp = Stamp(msg.sender, fieldInfo.lastStatus, block.timestamp, block.number);
         fieldInfo.validations.push(pendingStamp);
         
@@ -286,11 +289,15 @@ contract Holon {
         Info memory i = p.personalInfo[_field];
         require(msg.value >= i.price, "You must pay");
         p.pendingDataDeliver++;
-
         emit LetMeSeeYourData(msg.sender, _address, _field);
-        uint index = personaRequestedFields[_address].push(RequestedField(msg.sender, _field));
-        personaAllowedFields[_address][msg.sender][_field] = index;
-
+        
+        RequestedField storage request = requestedFieldData[_address][msg.sender][_field];
+        if(!request.isRequested) {
+            uint index = personaRequestedFields[_address].push(PendingRequestedField(msg.sender, _field));
+            request.fieldIndex = index - 1;
+            request.isRequested = true;
+        }
+            
         return true;
     }
 
@@ -299,7 +306,7 @@ contract Holon {
     view
     returns (address[] memory, string[] memory, string[] memory)
     {
-        RequestedField[] memory requestedFields =  personaRequestedFields[msg.sender];
+        PendingRequestedField[] memory requestedFields =  personaRequestedFields[msg.sender];
         uint size = requestedFields.length;
         address[] memory consumersAddress = new address[](size);
         string[] memory consumersName = new string[](size);
@@ -321,9 +328,9 @@ contract Holon {
     view
     returns (bool, string memory)
     {
-        bool isAllowed = personaAllowedFields[personaAddress][msg.sender][_field] == getDeliverFieldChoiceCode(DeliverFieldChoices.Allow);
+        RequestedField memory request = requestedFieldData[personaAddress][msg.sender][_field];
         string memory fieldData;
-        if(isAllowed) {
+        if(request.isAllowed) {
             Persona storage persona = members[personaAddress];
             require(persona.exists, "This persona is not registered");
             Info storage fieldInfo = persona.personalInfo[_field];
@@ -331,18 +338,7 @@ contract Holon {
             fieldData = fieldInfo.data;
         }
 
-        return (isAllowed, fieldData);
-    }
-
-    function getDeliverFieldChoiceCode(DeliverFieldChoices deliverChoice)
-    private
-    pure
-    returns (uint)
-    {
-        uint choiceCode = uint(-2); 
-        if(deliverChoice == DeliverFieldChoices.Allow)
-            choiceCode = uint(-1);
-        return choiceCode;
+        return (request.isAllowed, fieldData);
     }
 
     function deliverDecryptedData(bool _accept, address payable _address, string memory _field) 
@@ -352,23 +348,21 @@ contract Holon {
         Persona storage p = members[msg.sender];
         require(p.exists, "This persona is not registered");
         Info memory i = p.personalInfo[_field];
-        uint deliverChoice = getDeliverFieldChoiceCode(DeliverFieldChoices.Allow);
 
         if (i.price > 0) {
             if (!_accept) {
                 _address.transfer(i.price);
             } else {
                 p.personalAddress.transfer(i.price);
-                deliverChoice = getDeliverFieldChoiceCode(DeliverFieldChoices.Deny);
             }
         }
         p.pendingDataDeliver--;
 
         emit DeliverData(_accept, msg.sender, _address, i.dataCategory, _field, i.data);
-
-        uint fieldIndex = personaAllowedFields[msg.sender][_address][_field];
-        personaAllowedFields[msg.sender][_address][_field] = deliverChoice;
-        removeRequestedField(msg.sender, fieldIndex);
+        
+        RequestedField storage request = requestedFieldData[msg.sender][_address][_field];
+        request.isAllowed = _accept;
+        removeRequestedField(msg.sender, request.fieldIndex);
 
         return true;
     }
@@ -397,6 +391,4 @@ contract Holon {
     {        
         return holonValidatorsList.length;
     }
-
-        
 }
