@@ -144,7 +144,7 @@ contract Holon {
         returns (bool)
     {
         require(correctPrice(_strategy, _price), "Your charge or rewards strategy does not match with the price informed");
-        require(msg.value >= 1 szabo, "You have to pay 1 ether to become a validator");
+        require(msg.value >= 1 ether, "You have to pay 1 ether to become a validator");
         Persona memory p = members[msg.sender];
         require(p.exists, "You must be a persona within Holon to become a validator");
         holonValidators[msg.sender] = Validator(msg.sender, 0, _strategy, _price, true);
