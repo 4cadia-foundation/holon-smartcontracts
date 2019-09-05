@@ -76,8 +76,8 @@ contract Holon {
     mapping(uint => string) public infoCategories;    
     mapping(address => Persona) public members;
     mapping(address => Validator) public holonValidators;
-    mapping (address => PendingRequestedField[]) public personaRequestedFields;
-    mapping (address => mapping (address => mapping (string => RequestedField))) public requestedFieldData;
+    mapping (address => PendingRequestedField[]) personaRequestedFields;
+    mapping (address => mapping (address => mapping (string => RequestedField))) requestedFieldData;
     address[] public holonValidatorsList;
     
     constructor () public payable {
