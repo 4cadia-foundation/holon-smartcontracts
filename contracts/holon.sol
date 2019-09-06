@@ -4,7 +4,7 @@ pragma experimental ABIEncoderV2;
 contract Holon {
     
     struct Validator {
-        address validatorAddress;
+        address payable validatorAddress;
         uint reputation;
         ValidationCostStrategy strategy;
         uint price;
@@ -55,9 +55,9 @@ contract Holon {
         pure
         returns (bool)
     {
-        if (_strategy == ValidationCostStrategy.ForFree && valueInformed>0) {
+        if ((_strategy == ValidationCostStrategy.ForFree || _strategy == ValidationCostStrategy.Rebate) && valueInformed > 0) {
             return false;
-        } else if (_strategy != ValidationCostStrategy.ForFree && valueInformed<1) {
+        } else if (_strategy == ValidationCostStrategy.Charged && valueInformed == 0) {
             return false;
         }
         return true;
@@ -81,7 +81,7 @@ contract Holon {
     address[] public holonValidatorsList;
     
     constructor () public payable {
-        
+  
     }
     function removeRequestedField(address persona, uint index) 
     private
@@ -143,7 +143,6 @@ contract Holon {
         payable 
         returns (bool)
     {
-        require(correctPrice(_strategy, _price), "Your charge or rewards strategy does not match with the price informed");
         require(msg.value >= 1 ether, "You have to pay 1 ether to become a validator");
         Persona memory p = members[msg.sender];
         require(p.exists, "You must be a persona within Holon to become a validator");
@@ -169,14 +168,15 @@ contract Holon {
         Validator memory v = holonValidators[_validator];
         require(v.exists, "Validator informed is not registered");
         require(correctPrice(v.strategy, msg.value), "You must send a correct value");
-        bool check = true;
-        if (v.strategy == ValidationCostStrategy.Charged && msg.value<v.price) {
-            check = false;
-        }
-        require(check, "You must send a correct value");
-        
+
+
         Persona storage persona = members[msg.sender];
         require(persona.exists, "Persona not found");
+
+        if (v.strategy == ValidationCostStrategy.Charged) {
+            require(msg.value >= v.price, "Invalid Value");
+            v.validatorAddress.transfer(msg.value);
+        }
 
         Info storage fieldInfo = persona.personalInfo[_field];
         require(fieldInfo.exists, "Persona field not found");
@@ -209,16 +209,12 @@ contract Holon {
         returns (bool)
     {
         Validator storage v = holonValidators[msg.sender];
-        if (v.strategy == ValidationCostStrategy.Charged) {
-            require(correctPrice(v.strategy, msg.value), "You must send a correct value");
-        }
-        bool check = true;
-        if (v.strategy == ValidationCostStrategy.Rebate && msg.value<v.price) {
-            check = false;
-        }
-        require(check, "You must send a correct value");
         Persona storage p = members[_persona];
         Info storage i = p.personalInfo[_field];
+
+        if (v.strategy == ValidationCostStrategy.Rebate) {
+            require(msg.value >= i.price, "You must send a correct value");
+        }
         i.lastStatus = _status;
         i.validators[msg.sender] = v;
         Stamp memory s = Stamp(msg.sender, _status, block.timestamp, block.number);
@@ -227,7 +223,7 @@ contract Holon {
         if (_status == ValidationChoices.CannotEvaluate) {
             return true;
         }
-        if (v.strategy == ValidationCostStrategy.Rebate && msg.value > 0) {
+        if (v.strategy == ValidationCostStrategy.Rebate) {
             p.personalAddress.transfer(msg.value);
         }
         if (_status == ValidationChoices.Validated) {
