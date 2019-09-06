@@ -167,7 +167,7 @@ contract Holon {
     {
         Validator memory v = holonValidators[_validator];
         require(v.exists, "Validator informed is not registered");
-        require(correctPrice(v.strategy, msg.value), "You must send a correct value");
+        // require(correctPrice(v.strategy, msg.value), "You must send a correct value"); DON'T REMOVE!!!
 
 
         Persona storage persona = members[msg.sender];
@@ -212,9 +212,9 @@ contract Holon {
         Persona storage p = members[_persona];
         Info storage i = p.personalInfo[_field];
 
-        if (v.strategy == ValidationCostStrategy.Rebate) {
-            require(msg.value >= i.price, "You must send a correct value");
-        }
+        // if (v.strategy == ValidationCostStrategy.Rebate) {
+        //     require(msg.value >= i.price, "You must send a correct value");
+        // } DON'T REMOVE!!!
         i.lastStatus = _status;
         i.validators[msg.sender] = v;
         Stamp memory s = Stamp(msg.sender, _status, block.timestamp, block.number);
