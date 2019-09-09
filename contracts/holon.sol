@@ -211,6 +211,7 @@ contract Holon {
         Validator storage v = holonValidators[msg.sender];
         Persona storage p = members[_persona];
         Info storage i = p.personalInfo[_field];
+        address payable ppp = p.personalAddress;
 
         // if (v.strategy == ValidationCostStrategy.Rebate) {
         //     require(msg.value >= i.price, "You must send a correct value");
@@ -224,7 +225,7 @@ contract Holon {
             return true;
         }
         if (v.strategy == ValidationCostStrategy.Rebate) {
-            p.personalAddress.transfer(msg.value);
+            ppp.transfer(msg.value);
         }
         if (_status == ValidationChoices.Validated) {
             i.reputation++;
