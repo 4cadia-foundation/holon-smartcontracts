@@ -25,7 +25,7 @@ contract HolonStorage {
         return persona.exists;
     }
 
-    function personaFieldExists(address personaAddress, string fieldName) returns (bool) {
+    function personaFieldExists(address personaAddress, string memory fieldName) public view returns (bool) {
         Persona storage persona = _personas[personaAddress];
         return persona.fieldInfo[fieldName].exists;
     }
@@ -41,8 +41,8 @@ contract HolonStorage {
                              uint fieldPrice,
                              string memory category,
                              string memory subCategory) public {
-
-        //terminar o add field                                 
+        Persona storage persona = _personas[msg.sender];
+        persona.fieldInfo[fieldName] = FieldInfo(fieldData, fieldPrice, category, subCategory, true);                                    
     }
 }
 
@@ -51,8 +51,6 @@ contract HolonPersona {
 
     //private fields
     HolonStorage _holonStorage;
-    uint _validatorStake;
-    address _owner;
 
     //modifiers
     modifier isNotPersona {
@@ -69,10 +67,14 @@ contract HolonPersona {
         require(!_holonStorage.personaFieldExists(msg.sender, fieldName), "Field already added!");
         _; 
     }
+
+    modifier fieldExists(string memory fieldName){
+        require(_holonStorage.personaFieldExists(msg.sender, fieldName), "Field not exists!");
+        _; 
+    }
     
     //constructor
     constructor(address storageSmAddress) public {
-        _owner = msg.sender;
         _holonStorage = HolonStorage(storageSmAddress);
     }  
 
@@ -85,10 +87,15 @@ contract HolonPersona {
                              string memory fieldData,
                              uint fieldPrice,
                              string memory category,
-                             string memory subCategory) public isPersona, fieldNotExists(fieldName) {
-
+                             string memory subCategory) 
+    public isPersona fieldNotExists(fieldName) {
         _holonStorage.addPersonaField(fieldName, fieldData, fieldPrice, category, subCategory);
     }
 
-    
+    function askToValidate(address validator,
+                           string memory field,
+                           string memory proofUrl)
+    public isPersona fieldExists(field){
+        
+    }
 }
