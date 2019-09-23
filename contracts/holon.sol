@@ -25,10 +25,24 @@ contract HolonStorage {
         return persona.exists;
     }
 
+    function personaFieldExists(address personaAddress, string fieldName) returns (bool) {
+        Persona storage persona = _personas[personaAddress];
+        return persona.fieldInfo[fieldName].exists;
+    }
+
     function addPersona(string memory name, uint price) public {
         FieldInfo memory nameField = FieldInfo(name, price, "Plain text", "Personal info", true);
         Persona storage newPersona = _personas[msg.sender];
         newPersona.fieldInfo["name"] = nameField;
+    }
+
+    function addPersonaField(string memory fieldName, 
+                             string memory fieldData,
+                             uint fieldPrice,
+                             string memory category,
+                             string memory subCategory) public {
+
+        //terminar o add field                                 
     }
 }
 
@@ -40,19 +54,41 @@ contract HolonPersona {
     uint _validatorStake;
     address _owner;
 
-     //modifiers
+    //modifiers
     modifier isNotPersona {
         require(!_holonStorage.isPersona(msg.sender), "Persona already added!");
         _;
     }
     
+    modifier isPersona {
+        require(_holonStorage.isPersona(msg.sender), "Persona not exists!");
+        _; 
+    }
+
+    modifier fieldNotExists(string memory fieldName){
+        require(!_holonStorage.personaFieldExists(msg.sender, fieldName), "Field already added!");
+        _; 
+    }
+    
+    //constructor
     constructor(address storageSmAddress) public {
         _owner = msg.sender;
         _holonStorage = HolonStorage(storageSmAddress);
     }  
 
+    //public functions
     function addPersona(string memory name, uint price) public isNotPersona {
         _holonStorage.addPersona(name, price);
     }
+
+    function addPersonaField(string memory fieldName, 
+                             string memory fieldData,
+                             uint fieldPrice,
+                             string memory category,
+                             string memory subCategory) public isPersona, fieldNotExists(fieldName) {
+
+        _holonStorage.addPersonaField(fieldName, fieldData, fieldPrice, category, subCategory);
+    }
+
     
 }
