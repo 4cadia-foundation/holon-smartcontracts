@@ -1,0 +1,111 @@
+{
+    "infoCategories": [
+        {
+            "index": 1,
+            "details": "Personal Info"
+        },
+        {
+            "index": 2,
+            "details": "Professional Info"
+        },
+        {
+            "index": 3,
+            "details": "Financial Info"
+        }
+    ],
+    "masteraccount": {
+        "address" : "0x1CC029148709da9014A91Ba4B71432F89dd2f601",
+        "privatekey" : "e452c91efead165ec9ba005b5f437be6101eb10a7c650a3d0cc5da80d9ed5d80"
+    },
+    "personas": [
+        {
+            "address" : "0x8b542882b80EE26B004E279aA547e6FF6F6B2974",
+            "privatekey" : "4f711082ece7191a111ab86bc46ba93ba0b0c34c2b5f7d6d585a1e8f3832e576",
+            "personaData" : [
+                {
+                    "infoCode": 1,
+                    "dataCategory": 0,
+                    "field": "email",
+                    "data": "jeff_01@email.com",
+                    "price": 0
+                },
+                {
+                    "infoCode": 1,
+                    "dataCategory": 0,
+                    "field": "name",
+                    "data": "Jeff Persona",
+                    "price": 0
+                }
+            ]
+        },
+        {
+            "address" : "0xF035261f87132fcd3C37730f8A07982B8d7d1330",
+            "privatekey" : "C9FC81A1C5E60CD49DF15EB33667A69655468031873AF64930EF7A82A6A61076",
+            "personaData" : [
+                {
+                    "infoCode": 1,
+                    "dataCategory": 0,
+                    "field": "email",
+                    "data": "emailPersona_02@email.com",
+                    "price": 13000000000000000
+                },
+                {
+                    "infoCode": 1,
+                    "dataCategory": 0,
+                    "field": "name",
+                    "data": "Paulo Persona 02",
+                    "price": 15000000000000000
+                }
+            ]
+        },
+        {
+            "address" : "0xDf5F84382EedCA8424D976a5a25C6e4FE5b51f95",
+            "privatekey" : "F81ED0C6FE81872F9A231071FFEC9A71A56CF03AB4320459F1C77042E465403E",
+            "personaData" : [
+                {
+                    "infoCode": 1,
+                    "dataCategory": 0,
+                    "field": "email",
+                    "data": "emailPersona_03@email.com",
+                    "price": 17000000000000000
+                },
+                {
+                    "infoCode": 1,
+                    "dataCategory": 0,
+                    "field": "name",
+                    "data": "Pedrita Persona 03",
+                    "price": 18000000000000000
+                }
+            ]
+        }              
+    ],
+    "validators": [
+        {
+            "address" : "0x1c5fBDf725C093c52A8464d226d7cf68c2605Ec0",
+            "privatekey" : "37CB7B1DEF9DC0F219DB7D0A0D14E2F1E25609FE2CFE31C8DA6DA70EAFB43E2F",
+            "personaData" : [
+                {
+                    "infoCode": 1,
+                    "dataCategory": 0,
+                    "field": "email",
+                    "data": "emailValidator_01@email.com",
+                    "price": 10000000000000000
+                },
+                {
+                    "infoCode": 1,
+                    "dataCategory0": 0,
+                    "field": "name",
+                    "data": "Maria Validadora",
+                    "price": 10000000000000000
+                }
+            ]
+
+        }
+    ],
+    "consumers": [
+        {
+            "address" : "0x8ac7fB9923165DD5A28f155abA8b037E67ab1714",
+            "privatekey" : "92544E362CC88D418D4536414B0D516D27DB9051551475B6F8E9D6348D9BA18C"
+        }
+    ]
+}
