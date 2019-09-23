@@ -38,7 +38,6 @@ contract Holon {
         mapping(string => Info) personalInfo;
         string[] fields;        
     }
-
     struct PendingRequestedField {
         address consumer;
         string field;
