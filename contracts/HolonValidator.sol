@@ -5,14 +5,8 @@ contract HolonValidator is Holon {
 
     //private fields
     uint _validatorStake;
-    address _owner;
 
     //modifiers
-    modifier isOwner {
-        require(_owner == msg.sender, "Only owner can access!");
-        _;
-    }
-
     modifier hasValidStake {
         require(msg.value >= _validatorStake, "Sent stake less than minimum stake accepted");
         _;
