@@ -95,7 +95,7 @@ contract HolonPersona {
     function askToValidate(address validator,
                            string memory field,
                            string memory proofUrl)
-    public isPersona fieldExists(field){
+    public isPersona fieldExists(field) {
         
     }
 }
