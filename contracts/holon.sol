@@ -70,23 +70,37 @@ contract HolonStorage {
 
 }
 
+contract Holon {
+    
+    //property
+    HolonStorage public _holonStorage;
 
-contract HolonPersona {
-
-    //private fields
-    HolonStorage _holonStorage;
+    //constructor
+    constructor(address storageSmAddress) public {
+        _holonStorage = HolonStorage(storageSmAddress);
+    }
 
     //modifiers
-    modifier isNotPersona {
-        require(!_holonStorage.isPersona(msg.sender), "Persona already added!");
-        _;
-    }
-    
     modifier isPersona {
         require(_holonStorage.isPersona(msg.sender), "Persona not exists!");
         _; 
     }
 
+    modifier isNotPersona {
+        require(!_holonStorage.isPersona(msg.sender), "Persona already added!");
+        _;
+    }
+
+    modifier isNotValidator {
+        require(!_holonStorage.isValidator(msg.sender), "Validator already exists!");
+        _;
+    }
+}
+
+
+contract HolonPersona is Holon {
+
+    //modifiers
     modifier fieldNotExists(string memory fieldName){
         require(!_holonStorage.personaFieldExists(msg.sender, fieldName), "Field already added!");
         _; 
@@ -97,11 +111,6 @@ contract HolonPersona {
         _; 
     }
     
-    //constructor
-    constructor(address storageSmAddress) public {
-        _holonStorage = HolonStorage(storageSmAddress);
-    }
-
     //public functions
     function addPersona(string memory name, uint price) public isNotPersona {
         _holonStorage.addPersona(name, price);
@@ -125,11 +134,10 @@ contract HolonPersona {
 }
 
 
-contract HolonValidator {
+contract HolonValidator is Holon {
 
     //private fields
     uint _validatorStake;
-    HolonStorage _holonStorage;
     address _owner;
 
     //modifiers
@@ -138,21 +146,12 @@ contract HolonValidator {
         _;
     }
 
-    modifier isNotValidator {
-        require(!_holonStorage.isValidator(msg.sender), "Validator already exists!");
-        _;
-    }
-
     modifier hasValidStake {
         require(msg.value >= _validatorStake, "Sent stake less than minimum stake accepted");
         _;
     }
 
-    modifier isPersona {
-        require(_holonStorage.isPersona(msg.sender), "Persona not exists!");
-        _;
-    }
-
+    //constructor
     constructor(address storageSmAddress) public {
         _owner = msg.sender;
         _holonStorage = HolonStorage(storageSmAddress);
