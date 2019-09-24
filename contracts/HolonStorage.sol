@@ -30,7 +30,7 @@ contract HolonStorage {
     }
 
     //mappings
-    mapping (address => Persona) _personas;
+    mapping (address => Persona) public _personas;
     mapping(address => Validator) public _validators;
 
     //public functions
@@ -68,4 +68,20 @@ contract HolonStorage {
         _validators[msg.sender] = Validator(_strategy, _price, true);
     }
 
+    function getValidatorPrice(address validatorAddress) public view returns (uint) {
+         Validator storage validator = _validators[validatorAddress];
+         return validator.price;
+    }
+    
+    function getValidatorCostStrategy(address validatorAddress) public view returns (ValidationCostStrategy) {
+         Validator storage validator = _validators[validatorAddress];
+         return validator.strategy;
+    }
+    
+    function askToValidate(address validator,
+                           string memory field,
+                           string memory proofUrl) public {
+
+
+    }
 }

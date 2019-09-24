@@ -4,16 +4,16 @@ import './Holon.sol';
 contract HolonPersona is Holon {
 
     //modifiers
-    modifier fieldNotExists(string memory fieldName){
+    modifier fieldNotExists(string memory fieldName) {
         require(!_holonStorage.personaFieldExists(msg.sender, fieldName), "Field already added!");
         _; 
     }
 
-    modifier fieldExists(string memory fieldName){
+    modifier fieldExists(string memory fieldName) {
         require(_holonStorage.personaFieldExists(msg.sender, fieldName), "Field not exists!");
         _; 
     }
-    
+  
     //public functions
     function addPersona(string memory name, uint price) public isNotPersona {
         _holonStorage.addPersona(name, price);
@@ -31,7 +31,18 @@ contract HolonPersona is Holon {
     function askToValidate(address validator,
                            string memory field,
                            string memory proofUrl)
-    public isPersona fieldExists(field) {
-        
+    public payable
+           isPersona 
+           fieldExists(field) 
+           isValidator(validator) {
+
+        HolonStorage.ValidationCostStrategy strategy = _holonStorage.getValidatorCostStrategy(validator);
+        if (strategy == HolonStorage.ValidationCostStrategy.Charged) {
+            require(msg.value >= _holonStorage.getValidatorPrice(validator), "Invalid validator payment price!");
+            address payable payableValidator = address(uint160(validator));
+            payableValidator.transfer(msg.value);
+        }       
+
+        _holonStorage.askToValidate(validator, field, proofUrl);
     }
 }
