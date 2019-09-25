@@ -13,6 +13,12 @@ contract HolonPersona is Holon {
         require(_holonStorage.personaFieldExists(msg.sender, fieldName), "Field not exists!");
         _;
     }
+
+    modifier isAskedField(consumer, fieldName) {
+        require(_holonStorage.personaFieldExists(msg.sender, fieldName), "Field not exists!");
+        _;
+    }
+
     //public functions
     function addPersona(string memory name, uint price) public isNotPersona {
         _holonStorage.addPersona(name, price);
@@ -43,5 +49,11 @@ contract HolonPersona is Holon {
         }
 
         _holonStorage.askToValidate(validator, field, proofUrl);
+    }
+
+    function allowConsumer(address consumer,
+                           string memory fieldName)
+                           isAskedField(consumer, fieldName) {
+        
     }
 }

@@ -51,13 +51,23 @@ contract HolonStorage {
         string proofUrl;
     }
 
+    struct PersonaAskedFields {
+        address consumer;
+        string field;
+    }
+
 
     //mappings
     mapping (address => Persona) _personas;
     mapping (address => Validator)  _validators;
     mapping (address => PendingValidation[]) _validatorPendingValidation;
+    //validator
     mapping (address => mapping (address => mapping (string => bool))) _validatorHasPersonaFieldPending;
     mapping (address => mapping (address => mapping (string => uint))) _validatorPersonaFieldPendingIndex;
+    //consumer
+    mapping (address => PersonaAskedFields[]) _personaAskedFields;
+    mapping (address => mapping (address => mapping (string => uint))) _personaAskedFieldIndex;
+  
 
     //private functions  
     function removePendingValidation(address validatorAddress, uint index)
@@ -148,5 +158,12 @@ contract HolonStorage {
         setPersonaFieldPending(msg.sender, personaAddress, field, false);
         uint fieldIndex = _validatorPersonaFieldPendingIndex[msg.sender][personaAddress][field];
         removePendingValidation(msg.sender, fieldIndex);
+    }
+
+    function askPersonaField(address personaAddress, 
+                             string memory fieldName)
+                             public {
+        uint length = _personaAskedFields[personaAddress].push(PersonaAskedFields(msg.sender, fieldName));
+        _personaAskedFieldIndex[personaAddress][msg.sender][fieldName] = length - 1;
     }
 }
