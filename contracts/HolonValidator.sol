@@ -1,5 +1,5 @@
 pragma solidity 0.5.11;
-import './holon.sol';
+import './Holon.sol';
 
 contract HolonValidator is Holon {
 
