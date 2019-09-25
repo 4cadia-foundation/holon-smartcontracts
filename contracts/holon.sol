@@ -28,6 +28,11 @@ contract Holon {
         require(!_holonStorage.isValidator(msg.sender), "Validator already exists!");
         _;
     }
+    
+    modifier isValidator(address validatorAddress) {
+        require(_holonStorage.isValidator(validatorAddress), "Validator not exists!");
+        _;
+    }
 
     modifier isOwner {
         require(_owner == msg.sender, "Only owner can access!");
