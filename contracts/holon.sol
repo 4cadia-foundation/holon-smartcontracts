@@ -49,7 +49,7 @@ contract Holon {
     }
 
     modifier fieldExists(address persona, string memory fieldName) {
-        require(_holonStorage.personaFieldExists(msg.sender, fieldName), "Field not exists!");
+        require(_holonStorage.personaFieldExists(persona, fieldName), "Field not exists!");
         _;
     }
 }

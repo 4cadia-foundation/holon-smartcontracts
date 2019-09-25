@@ -32,7 +32,8 @@ contract HolonConsumer is Holon {
                              isAllowedField(personaAddress, fieldName)
                              fieldExists(personaAddress, fieldName)
                              public payable 
-                             returns (string) {
+                             returns (string memory) {
+
         //apenas 1 vez
         //allowed false
     }

@@ -9,13 +9,8 @@ contract HolonPersona is Holon {
         _;
     }
 
-    modifier fieldExists(string memory fieldName) {
-        require(_holonStorage.personaFieldExists(msg.sender, fieldName), "Field not exists!");
-        _;
-    }
-
     modifier isAskedField(address consumer, string memory fieldName) {
-        require(_holonStorage.isAkedField(consumer, fieldName), "Field not asked!");
+        require(_holonStorage.isAskedField(consumer, fieldName), "Field not asked!");
         _;
     }
 
@@ -38,7 +33,7 @@ contract HolonPersona is Holon {
                            string memory proofUrl)
                            public payable
                            isPersona
-                           fieldExists(field)
+                           fieldExists(msg.sender, field)
                            validValidator(validator) {
 
         HolonStorage.ValidationCostStrategy strategy = _holonStorage.getValidatorCostStrategy(validator);
