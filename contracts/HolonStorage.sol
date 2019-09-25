@@ -111,16 +111,15 @@ contract HolonStorage {
          Validator storage validator = _validators[validatorAddress];
          return validator.price;
     }
-    
+
     function getValidatorCostStrategy(address validatorAddress) public view returns (ValidationCostStrategy) {
          Validator storage validator = _validators[validatorAddress];
          return validator.strategy;
     }
-    
+
     function askToValidate(address validator,
                            string memory field,
                            string memory proofUrl) public {
-
 
     }
 }

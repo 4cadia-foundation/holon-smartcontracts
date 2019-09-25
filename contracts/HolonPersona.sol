@@ -1,5 +1,5 @@
 pragma solidity 0.5.11;
-import './Holon.sol';
+import './holon.sol';
 
 contract HolonPersona is Holon {
 
@@ -30,17 +30,17 @@ contract HolonPersona is Holon {
     function askToValidate(address validator,
                            string memory field,
                            string memory proofUrl)
-    public payable
-           isPersona 
-           fieldExists(field) 
-           isValidator(validator) {
+                           public payable
+                           isPersona
+                           fieldExists(field)
+                           isValidator(validator) {
 
         HolonStorage.ValidationCostStrategy strategy = _holonStorage.getValidatorCostStrategy(validator);
         if (strategy == HolonStorage.ValidationCostStrategy.Charged) {
             require(msg.value >= _holonStorage.getValidatorPrice(validator), "Invalid validator payment price!");
             address payable payableValidator = address(uint160(validator));
             payableValidator.transfer(msg.value);
-        }       
+        }
 
         _holonStorage.askToValidate(validator, field, proofUrl);
     }
