@@ -9,12 +9,11 @@ contract HolonStorage {
         Rebate
     }
 
-    enum ValidationChoices {
+    enum ValidationStatus {
+        PendingValidation,
         Validated,
         NotValidated,
-        CannotEvaluate,
-        NewData,
-        ValidationPending
+        CannotEvaluate
     }
 
 
@@ -24,8 +23,8 @@ contract HolonStorage {
         uint price;
         string category;
         string subCategory;
-        ValidationChoices lastStatus;
         bool exists;
+        ValidationStatus lastStatus;
     }
 
     struct Persona {
@@ -42,15 +41,22 @@ contract HolonStorage {
 
     struct Stamp {
         address validatorAddress;
-        ValidationChoices status;
+        ValidationStatus status;
         uint date;
         uint blockNumber;
     }
 
+    struct PendingValidation {
+        address personaAddress;
+        string field;
+        string proofUrl;
+    }
+
 
     //mappings
-    mapping (address => Persona) public _personas;
-    mapping(address => Validator) public _validators;
+    mapping (address => Persona) _personas;
+    mapping (address => Validator)  _validators;
+    mapping (address => PendingValidation[]) _validatorPendingValidation;
 
 
     //public functions
@@ -70,7 +76,7 @@ contract HolonStorage {
     }
 
     function addPersona(string memory name, uint price) public {
-        FieldInfo memory nameField = FieldInfo(name, price, "Plain text", "Personal info", true);
+        FieldInfo memory nameField = FieldInfo(name, price, "Plain text", "Personal info", true, ValidationStatus.NotValidated);
         Persona storage newPersona = _personas[msg.sender];
         newPersona.fieldInfo["name"] = nameField;
     }
@@ -81,14 +87,14 @@ contract HolonStorage {
                              string memory category,
                              string memory subCategory) public {
         Persona storage persona = _personas[msg.sender];
-        persona.fieldInfo[fieldName] = FieldInfo(fieldData, fieldPrice, category, subCategory, true);
+        persona.fieldInfo[fieldName] = FieldInfo(fieldData, fieldPrice, category, subCategory, true, ValidationStatus.NotValidated);
     }
 
     function addValidator(ValidationCostStrategy _strategy, uint _price) public {
         _validators[msg.sender] = Validator(_strategy, _price, true);
     }
 
-    function validate(address _persona, string memory _field, HolonStorage.ValidationChoices _status) public payable returns (bool) {
+    function validate(address _persona, string memory _field, ValidationStatus _status) public payable returns (bool) {
         HolonStorage.Validator storage validator = HolonStorage._validators[msg.sender];
         HolonStorage.Persona storage persona = HolonStorage._personas[_persona];
         HolonStorage.FieldInfo storage info = persona.fieldInfo[_field];
@@ -120,6 +126,6 @@ contract HolonStorage {
     function askToValidate(address validator,
                            string memory field,
                            string memory proofUrl) public {
-
+        _validatorPendingValidation[validator].push(PendingValidation(msg.sender, field, proofUrl));
     }
 }
