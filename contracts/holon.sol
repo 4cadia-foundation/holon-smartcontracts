@@ -2,7 +2,7 @@ pragma solidity 0.5.11;
 import './HolonStorage.sol';
 
 contract Holon {
-    
+
     //property
     HolonStorage public _holonStorage;
     address public _owner;
@@ -16,9 +16,13 @@ contract Holon {
     //modifiers
     modifier isPersona {
         require(_holonStorage.isPersona(msg.sender), "Persona not exists!");
-        _; 
+        _;
     }
 
+    modifier validPersona(address personaAddress) {
+        require(_holonStorage.isPersona(personaAddress), "Persona not exists!");
+        _;
+    }
     modifier isNotPersona {
         require(!_holonStorage.isPersona(msg.sender), "Persona already added!");
         _;
@@ -29,7 +33,12 @@ contract Holon {
         _;
     }
     
-    modifier isValidator(address validatorAddress) {
+    modifier isValidator {
+        require(_holonStorage.isValidator(msg.sender), "Validator not exists!");
+        _;
+    }
+
+    modifier validValidator(address validatorAddress) {
         require(_holonStorage.isValidator(validatorAddress), "Validator not exists!");
         _;
     }
