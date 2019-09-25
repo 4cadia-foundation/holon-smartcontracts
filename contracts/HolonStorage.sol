@@ -66,8 +66,9 @@ contract HolonStorage {
     mapping (address => mapping (address => mapping (string => uint))) _validatorPersonaFieldPendingIndex;
     //consumer
     mapping (address => PersonaAskedFields[]) _personaAskedFields;
+    mapping (address => mapping (address => mapping (string => bool))) _isPersonaFieldAsked;
     mapping (address => mapping (address => mapping (string => uint))) _personaAskedFieldIndex;
-  
+    mapping (address => mapping (address => mapping (string => bool))) _isPersonaFieldAllowed;
 
     //private functions  
     function removePendingValidation(address validatorAddress, uint index)
@@ -79,6 +80,17 @@ contract HolonStorage {
 
         pendingValidation.length--;
     }
+
+    function removeAskedField(address personaAddress, uint index)
+    private
+    {
+        PersonaAskedFields[] storage askedFields = _personaAskedFields[personaAddress];
+        if (askedFields.length > 1)
+            askedFields[index] = askedFields[askedFields.length - 1];
+
+        askedFields.length--;
+    }
+
 
     //public functions
     function getPersonaFieldPending(address validatorAddress,
@@ -165,5 +177,31 @@ contract HolonStorage {
                              public {
         uint length = _personaAskedFields[personaAddress].push(PersonaAskedFields(msg.sender, fieldName));
         _personaAskedFieldIndex[personaAddress][msg.sender][fieldName] = length - 1;
+        _isPersonaFieldAsked[personaAddress][msg.sender][fieldName] = true;
+    }
+
+    function isAskedField(address consumer, 
+                          string memory fieldName) 
+                          public view
+                          returns (bool) {
+        return _isPersonaFieldAsked[msg.sender][consumer][fieldName]; 
+    }
+
+    function allowConsumer(address consumer,
+                           string memory fieldName,
+                           bool allow)
+                           public {
+
+        _isPersonaFieldAllowed[msg.sender][consumer][fieldName] = allow;
+        _isPersonaFieldAsked[msg.sender][consumer][fieldName] = false;
+        uint fieldIndex = _personaAskedFieldIndex[msg.sender][consumer][fieldName];
+        removeAskedField(msg.sender, fieldIndex);
+    }
+
+    function isAllowedField(address personaAddress, 
+                            string memory fieldName)
+                            public view
+                            returns (bool) {
+        return _isPersonaFieldAllowed[personaAddress][msg.sender][fieldName];                              
     }
 }

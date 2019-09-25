@@ -14,8 +14,8 @@ contract HolonPersona is Holon {
         _;
     }
 
-    modifier isAskedField(consumer, fieldName) {
-        require(_holonStorage.personaFieldExists(msg.sender, fieldName), "Field not exists!");
+    modifier isAskedField(address consumer, string memory fieldName) {
+        require(_holonStorage.isAkedField(consumer, fieldName), "Field not asked!");
         _;
     }
 
@@ -52,8 +52,11 @@ contract HolonPersona is Holon {
     }
 
     function allowConsumer(address consumer,
-                           string memory fieldName)
+                           string memory fieldName,
+                           bool allow)
+                           public
+                           validPersona(consumer)
                            isAskedField(consumer, fieldName) {
-        
+         _holonStorage.allowConsumer(consumer, fieldName, allow);
     }
 }
