@@ -9,6 +9,13 @@ contract HolonStorage {
         Rebate 
     }
 
+    enum ValidationStatus { 
+        PendingValidation,
+        Validated, 
+        NotValidated, 
+        CannotEvaluate
+    }
+
     //structs
     struct FieldInfo {
         string data;
@@ -16,6 +23,7 @@ contract HolonStorage {
         string category;
         string subCategory;
         bool exists;
+        ValidationStatus lastStatus;
     }
 
     struct Persona {
@@ -29,9 +37,16 @@ contract HolonStorage {
         bool exists;
     }
 
+    struct PendingValidation {
+        address personaAddress;
+        string field;
+        string proofUrl;
+    }
+
     //mappings
-    mapping (address => Persona) public _personas;
-    mapping(address => Validator) public _validators;
+    mapping (address => Persona) _personas;
+    mapping (address => Validator)  _validators;
+    mapping (address => PendingValidation[]) _validatorPendingValidation;
 
     //public functions
     function isPersona(address personaAddress) public view returns (bool) {
@@ -50,7 +65,7 @@ contract HolonStorage {
     }
 
     function addPersona(string memory name, uint price) public {
-        FieldInfo memory nameField = FieldInfo(name, price, "Plain text", "Personal info", true);
+        FieldInfo memory nameField = FieldInfo(name, price, "Plain text", "Personal info", true, ValidationStatus.NotValidated);
         Persona storage newPersona = _personas[msg.sender];
         newPersona.fieldInfo["name"] = nameField;
     }
@@ -61,7 +76,7 @@ contract HolonStorage {
                              string memory category,
                              string memory subCategory) public {
         Persona storage persona = _personas[msg.sender];
-        persona.fieldInfo[fieldName] = FieldInfo(fieldData, fieldPrice, category, subCategory, true);                                    
+        persona.fieldInfo[fieldName] = FieldInfo(fieldData, fieldPrice, category, subCategory, true, ValidationStatus.NotValidated);                                    
     }
 
     function addValidator(ValidationCostStrategy _strategy, uint _price) public {
@@ -81,7 +96,6 @@ contract HolonStorage {
     function askToValidate(address validator,
                            string memory field,
                            string memory proofUrl) public {
-
-
+        _validatorPendingValidation[validator].push(PendingValidation(msg.sender, field, proofUrl));                               
     }
 }
