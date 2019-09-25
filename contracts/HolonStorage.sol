@@ -59,10 +59,9 @@ contract HolonStorage {
     mapping (address => mapping (address => mapping (string => bool))) _validatorHasPersonaFieldPending;
     mapping (address => mapping (address => mapping (string => uint))) _validatorPersonaFieldPendingIndex;
 
-    //private functions  
-    function removePendingValidation(address validatorAddress, uint index)
-    private
-    {
+
+    //private functions
+    function removePendingValidation(address validatorAddress, uint index) private {
         PendingValidation[] storage pendingValidation = _validatorPendingValidation[validatorAddress];
         if (pendingValidation.length > 1)
             pendingValidation[index] = pendingValidation[pendingValidation.length - 1];
@@ -70,13 +69,14 @@ contract HolonStorage {
         pendingValidation.length--;
     }
 
+
     //public functions
     function getPersonaFieldPending(address validatorAddress,
                                     address personaAddress,
                                     string memory field)
                                     public view
                                     returns (bool) {
-        return _validatorHasPersonaFieldPending[validatorAddress][personaAddress][field];   
+        return _validatorHasPersonaFieldPending[validatorAddress][personaAddress][field];
     }
 
     function setPersonaFieldPending(address validatorAddress,
@@ -85,7 +85,7 @@ contract HolonStorage {
                                     bool pending)
                                     public
                                     returns (bool) {
-        _validatorHasPersonaFieldPending[validatorAddress][personaAddress][field] = pending;  
+        _validatorHasPersonaFieldPending[validatorAddress][personaAddress][field] = pending;
     }
 
     function isPersona(address personaAddress) public view returns (bool) {
@@ -140,9 +140,9 @@ contract HolonStorage {
         _validatorPersonaFieldPendingIndex[validator][msg.sender][field] = length - 1;
     }
 
-    function validate(address personaAddress, 
-                      string memory field, 
-                      ValidationStatus status) 
+    function validate(address personaAddress,
+                      string memory field,
+                      ValidationStatus status)
                       public {
         _personas[personaAddress].fieldInfo[field].lastStatus = status;
         setPersonaFieldPending(msg.sender, personaAddress, field, false);

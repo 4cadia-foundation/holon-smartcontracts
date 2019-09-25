@@ -11,7 +11,7 @@ contract HolonValidator is Holon {
         require(msg.value >= _validatorStake, "Sent stake less than minimum stake accepted");
         _;
     }
-    
+
     modifier fieldExists(address persona, string memory fieldName) {
         require(_holonStorage.personaFieldExists(msg.sender, fieldName), "Field not exists!");
         _;
@@ -35,10 +35,10 @@ contract HolonValidator is Holon {
         _holonStorage.addValidator(strategy, price);
     }
 
-    function validate(address personaAddress, 
-                      string memory fieldName, 
-                      HolonStorage.ValidationStatus status) 
-                      public payable 
+    function validate(address personaAddress,
+                      string memory fieldName,
+                      HolonStorage.ValidationStatus status)
+                      public payable
                       isValidator
                       validPersona(personaAddress)
                       fieldExists(personaAddress, fieldName)
@@ -53,4 +53,5 @@ contract HolonValidator is Holon {
 
         _holonStorage.validate(personaAddress, fieldName, status);
     }
+
 }
