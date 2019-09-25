@@ -47,4 +47,9 @@ contract Holon {
         require(_owner == msg.sender, "Only owner can access!");
         _;
     }
+
+    modifier fieldExists(address persona, string memory fieldName) {
+        require(_holonStorage.personaFieldExists(msg.sender, fieldName), "Field not exists!");
+        _;
+    }
 }

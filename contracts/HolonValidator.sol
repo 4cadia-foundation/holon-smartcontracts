@@ -12,10 +12,6 @@ contract HolonValidator is Holon {
         _;
     }
     
-    modifier fieldExists(address persona, string memory fieldName) {
-        require(_holonStorage.personaFieldExists(msg.sender, fieldName), "Field not exists!");
-        _;
-    }
     modifier isPendingValidation(address personaAddress, string memory fieldName){
         require(_holonStorage.getPersonaFieldPending(msg.sender, personaAddress, fieldName), "Invalid permissions!");
         _;
