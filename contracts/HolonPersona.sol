@@ -33,7 +33,7 @@ contract HolonPersona is Holon {
                            public payable
                            isPersona
                            fieldExists(field)
-                           isValidator(validator) {
+                           validValidator(validator) {
 
         HolonStorage.ValidationCostStrategy strategy = _holonStorage.getValidatorCostStrategy(validator);
         if (strategy == HolonStorage.ValidationCostStrategy.Charged) {

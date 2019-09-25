@@ -11,7 +11,15 @@ contract HolonValidator is Holon {
         require(msg.value >= _validatorStake, "Sent stake less than minimum stake accepted");
         _;
     }
-
+    
+    modifier fieldExists(address persona, string memory fieldName) {
+        require(_holonStorage.personaFieldExists(msg.sender, fieldName), "Field not exists!");
+        _;
+    }
+    modifier isPendingValidation(address personaAddress, string memory fieldName){
+        require(_holonStorage.getPersonaFieldPending(msg.sender, personaAddress, fieldName), "Invalid permissions!");
+        _;
+    }
     //constructor
     constructor(address storageSmAddress) public {
         _owner = msg.sender;
@@ -27,22 +35,22 @@ contract HolonValidator is Holon {
         _holonStorage.addValidator(strategy, price);
     }
 
-    function validate(address _persona, string memory _field, HolonStorage.ValidationChoices _status) public payable returns (bool) {
-        HolonStorage.Validator memory validator = HolonStorage._validators[msg.sender];
-        HolonStorage.Persona memory persona = HolonStorage._personas[_persona];
-        HolonStorage.FieldInfo memory info = persona.fieldInfo[_field];
-        // if (v.strategy == ValidationCostStrategy.Rebate) {
-        //     require(msg.value >= i.price, "You must send a correct value");
-        // } DON'T REMOVE!!!
-        info.lastStatus = _status;
-        HolonStorage.Stamp memory validateStamp = HolonStorage.Stamp(msg.sender, _status, block.timestamp, block.number);
-        info.validations.push(validateStamp);
-        if (_status == HolonStorage.ValidationChoices.CannotEvaluate) {
-            return true;
+    function validate(address personaAddress, 
+                      string memory fieldName, 
+                      HolonStorage.ValidationStatus status) 
+                      public payable 
+                      isValidator
+                      validPersona(personaAddress)
+                      fieldExists(personaAddress, fieldName)
+                      isPendingValidation(personaAddress, fieldName) {
+
+        HolonStorage.ValidationCostStrategy strategy = _holonStorage.getValidatorCostStrategy(msg.sender);
+        if (strategy == HolonStorage.ValidationCostStrategy.Rebate) {
+            require(msg.value >= _holonStorage.getValidatorPrice(msg.sender), "Invalid validator payment price!");
+            address payable payablePersona = address(uint160(personaAddress));
+            payablePersona.transfer(msg.value);
         }
-        if (validator.strategy == HolonStorage.Rebate) {
-            _persona.transfer(msg.value);
-        }
-        return true;
+
+        _holonStorage.validate(personaAddress, fieldName, status);
     }
 }

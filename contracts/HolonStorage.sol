@@ -28,7 +28,6 @@ contract HolonStorage {
     }
 
     struct Persona {
-        address payable personaAddress;
         bool exists;
         mapping(string => FieldInfo) fieldInfo;
     }
@@ -57,9 +56,38 @@ contract HolonStorage {
     mapping (address => Persona) _personas;
     mapping (address => Validator)  _validators;
     mapping (address => PendingValidation[]) _validatorPendingValidation;
+    mapping (address => mapping (address => mapping (string => bool))) _validatorHasPersonaFieldPending;
+    mapping (address => mapping (address => mapping (string => uint))) _validatorPersonaFieldPendingIndex;
 
+    //private functions  
+    function removePendingValidation(address validatorAddress, uint index)
+    private
+    {
+        PendingValidation[] storage pendingValidation = _validatorPendingValidation[validatorAddress];
+        if (pendingValidation.length > 1)
+            pendingValidation[index] = pendingValidation[pendingValidation.length - 1];
+
+        pendingValidation.length--;
+    }
 
     //public functions
+    function getPersonaFieldPending(address validatorAddress,
+                                    address personaAddress,
+                                    string memory field)
+                                    public view
+                                    returns (bool) {
+        return _validatorHasPersonaFieldPending[validatorAddress][personaAddress][field];   
+    }
+
+    function setPersonaFieldPending(address validatorAddress,
+                                    address personaAddress,
+                                    string memory field,
+                                    bool pending)
+                                    public
+                                    returns (bool) {
+        _validatorHasPersonaFieldPending[validatorAddress][personaAddress][field] = pending;  
+    }
+
     function isPersona(address personaAddress) public view returns (bool) {
         Persona storage persona = _personas[personaAddress];
         return persona.exists;
@@ -94,25 +122,6 @@ contract HolonStorage {
         _validators[msg.sender] = Validator(_strategy, _price, true);
     }
 
-    function validate(address _persona, string memory _field, ValidationStatus _status) public payable returns (bool) {
-        HolonStorage.Validator storage validator = HolonStorage._validators[msg.sender];
-        HolonStorage.Persona storage persona = HolonStorage._personas[_persona];
-        HolonStorage.FieldInfo storage info = persona.fieldInfo[_field];
-        // if (v.strategy == ValidationCostStrategy.Rebate) {
-        //     require(msg.value >= i.price, "You must send a correct value");
-        // } DON'T REMOVE!!!
-        info.lastStatus = _status;
-        HolonStorage.Stamp memory validateStamp = HolonStorage.Stamp(msg.sender, _status, block.timestamp, block.number);
-        info.validations.push(validateStamp);
-        if (_status == HolonStorage.ValidationChoices.CannotEvaluate) {
-            return true;
-        }
-        if (validator.strategy == HolonStorage.Rebate) {
-            _persona.transfer(msg.value);
-        }
-        return true;
-    }
-
     function getValidatorPrice(address validatorAddress) public view returns (uint) {
          Validator storage validator = _validators[validatorAddress];
          return validator.price;
@@ -126,6 +135,18 @@ contract HolonStorage {
     function askToValidate(address validator,
                            string memory field,
                            string memory proofUrl) public {
-        _validatorPendingValidation[validator].push(PendingValidation(msg.sender, field, proofUrl));
+        uint length = _validatorPendingValidation[validator].push(PendingValidation(msg.sender, field, proofUrl));
+        setPersonaFieldPending(validator, msg.sender, field, true);
+        _validatorPersonaFieldPendingIndex[validator][msg.sender][field] = length - 1;
+    }
+
+    function validate(address personaAddress, 
+                      string memory field, 
+                      ValidationStatus status) 
+                      public {
+        _personas[personaAddress].fieldInfo[field].lastStatus = status;
+        setPersonaFieldPending(msg.sender, personaAddress, field, false);
+        uint fieldIndex = _validatorPersonaFieldPendingIndex[msg.sender][personaAddress][field];
+        removePendingValidation(msg.sender, fieldIndex);
     }
 }
