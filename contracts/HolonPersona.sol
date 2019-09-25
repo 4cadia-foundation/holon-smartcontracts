@@ -6,24 +6,24 @@ contract HolonPersona is Holon {
     //modifiers
     modifier fieldNotExists(string memory fieldName){
         require(!_holonStorage.personaFieldExists(msg.sender, fieldName), "Field already added!");
-        _; 
+        _;
     }
 
     modifier fieldExists(string memory fieldName){
         require(_holonStorage.personaFieldExists(msg.sender, fieldName), "Field not exists!");
-        _; 
+        _;
     }
-    
+
     //public functions
     function addPersona(string memory name, uint price) public isNotPersona {
         _holonStorage.addPersona(name, price);
     }
 
-    function addPersonaField(string memory fieldName, 
+    function addPersonaField(string memory fieldName,
                              string memory fieldData,
                              uint fieldPrice,
                              string memory category,
-                             string memory subCategory) 
+                             string memory subCategory)
     public isPersona fieldNotExists(fieldName) {
         _holonStorage.addPersonaField(fieldName, fieldData, fieldPrice, category, subCategory);
     }
@@ -32,6 +32,6 @@ contract HolonPersona is Holon {
                            string memory field,
                            string memory proofUrl)
     public isPersona fieldExists(field) {
-        
+
     }
 }
