@@ -1,5 +1,5 @@
 pragma solidity 0.5.11;
-import './holon.sol';
+import './Holon.sol';
 
 contract HolonPersona is Holon {
 
@@ -9,10 +9,11 @@ contract HolonPersona is Holon {
         _;
     }
 
-    modifier fieldExists(string memory fieldName) {
-        require(_holonStorage.personaFieldExists(msg.sender, fieldName), "Field not exists!");
+    modifier isAskedField(address consumer, string memory fieldName) {
+        require(_holonStorage.isAskedField(consumer, fieldName), "Field not asked!");
         _;
     }
+
     //public functions
     function addPersona(string memory name, uint price) public isNotPersona {
         _holonStorage.addPersona(name, price);
@@ -32,7 +33,7 @@ contract HolonPersona is Holon {
                            string memory proofUrl)
                            public payable
                            isPersona
-                           fieldExists(field)
+                           fieldExists(msg.sender, field)
                            validValidator(validator) {
 
         HolonStorage.ValidationCostStrategy strategy = _holonStorage.getValidatorCostStrategy(validator);
@@ -43,5 +44,14 @@ contract HolonPersona is Holon {
         }
 
         _holonStorage.askToValidate(validator, field, proofUrl);
+    }
+
+    function allowConsumer(address consumer,
+                           string memory fieldName,
+                           bool allow)
+                           public
+                           validPersona(consumer)
+                           isAskedField(consumer, fieldName) {
+         _holonStorage.allowConsumer(consumer, fieldName, allow);
     }
 }

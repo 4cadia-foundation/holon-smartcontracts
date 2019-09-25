@@ -1,10 +1,11 @@
 pragma solidity 0.5.11;
-import './holon.sol';
+import './Holon.sol';
 
 contract HolonValidator is Holon {
 
     //private fields
     uint _validatorStake;
+
 
     //modifiers
     modifier hasValidStake {
@@ -16,15 +17,19 @@ contract HolonValidator is Holon {
         require(_holonStorage.personaFieldExists(msg.sender, fieldName), "Field not exists!");
         _;
     }
+
     modifier isPendingValidation(address personaAddress, string memory fieldName){
         require(_holonStorage.getPersonaFieldPending(msg.sender, personaAddress, fieldName), "Invalid permissions!");
         _;
     }
+
+
     //constructor
     constructor(address storageSmAddress) public {
         _owner = msg.sender;
         _holonStorage = HolonStorage(storageSmAddress);
     }
+
 
     //public functions
     function setStake(uint stake) public isOwner {
