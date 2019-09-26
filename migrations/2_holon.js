@@ -8,5 +8,6 @@ module.exports = async deployer => {
   await deployer.deploy(HolonStorage);
   await deployer.deploy(Holon, HolonStorage.address);
   await deployer.deploy(HolonPersona);
+  await deployer.deploy(HolonValidator);
   await deployer.deploy(HolonConsumer);
 };
