@@ -28,7 +28,7 @@ contract HolonValidator is Holon {
     }
 
     function addValidator(HolonStorage.ValidationCostStrategy strategy, uint price) public payable hasValidStake isPersona {
-        _holonStorage.addValidator(strategy, price);
+        _holonStorage.addValidator(msg.sender, strategy, price);
     }
 
     function validate(address personaAddress, 
@@ -47,6 +47,6 @@ contract HolonValidator is Holon {
             payablePersona.transfer(msg.value);
         }
 
-        _holonStorage.validate(personaAddress, fieldName, status);
+        _holonStorage.validate(msg.sender, personaAddress, fieldName, status);
     }
 }
