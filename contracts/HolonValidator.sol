@@ -1,4 +1,5 @@
 pragma solidity 0.5.11;
+pragma experimental ABIEncoderV2;
 import './Holon.sol';
 
 contract HolonValidator is Holon {
@@ -52,8 +53,13 @@ contract HolonValidator is Holon {
         _holonStorage.validate(personaAddress, fieldName, status);
     }
 
-    function getPendingValidations() public view {
+    function getPendingValidations() public
+                                     view
+                                     returns (address[] memory personasAddress,
+                                     string[] memory personasNames,
+                                     string[] memory fields) {
         _holonStorage.getPendingValidations();
+        return (personasAddress, personasNames, fields);
     }
 
 }
