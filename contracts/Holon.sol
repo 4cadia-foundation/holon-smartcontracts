@@ -8,8 +8,7 @@ contract Holon {
     address public _owner;
 
     //constructor
-    constructor(address storageSmAddress) public {
-        _holonStorage = HolonStorage(storageSmAddress);
+    constructor() public {
         _owner == msg.sender;
     }
 
@@ -51,5 +50,10 @@ contract Holon {
     modifier fieldExists(address persona, string memory fieldName) {
         require(_holonStorage.personaFieldExists(persona, fieldName), "Field not exists!");
         _;
+    }
+
+    function BuildHolonStorage(address storageSmAddress) public {
+        //todo: ver um jeito melhor se possivel
+        _holonStorage = HolonStorage(storageSmAddress);
     }
 }

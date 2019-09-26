@@ -3,6 +3,11 @@ import './Holon.sol';
 
 contract HolonPersona is Holon {
 
+    //constructor
+    constructor(address storageSmAddress) public {
+        BuildHolonStorage(storageSmAddress);
+    }
+
     //modifiers
     modifier fieldNotExists(string memory fieldName) {
         require(!_holonStorage.personaFieldExists(msg.sender, fieldName), "Field already added!");
