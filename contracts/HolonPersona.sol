@@ -15,13 +15,13 @@ contract HolonPersona is Holon {
     }
 
     modifier isAskedField(address consumer, string memory fieldName) {
-        require(_holonStorage.isAskedField(consumer, fieldName), "Field not asked!");
+        require(_holonStorage.isAskedField(msg.sender, consumer, fieldName), "Field not asked!");
         _;
     }
 
     //public functions
     function addPersona(string memory name, uint price) public isNotPersona {
-        _holonStorage.addPersona(name, price);
+        _holonStorage.addPersona(name, price, msg.sender);
     }
 
     function addPersonaField(string memory fieldName,
@@ -30,7 +30,7 @@ contract HolonPersona is Holon {
                              string memory category,
                              string memory subCategory)
     public isPersona fieldNotExists(fieldName) {
-        _holonStorage.addPersonaField(fieldName, fieldData, fieldPrice, category, subCategory);
+        _holonStorage.addPersonaField(msg.sender, fieldName, fieldData, fieldPrice, category, subCategory);
     }
 
     function askToValidate(address validator,
@@ -48,7 +48,7 @@ contract HolonPersona is Holon {
             payableValidator.transfer(msg.value);
         }
 
-        _holonStorage.askToValidate(validator, field, proofUrl);
+        _holonStorage.askToValidate(msg.sender, validator, field, proofUrl);
     }
 
     function allowConsumer(address consumer,
@@ -57,6 +57,6 @@ contract HolonPersona is Holon {
                            public
                            validPersona(consumer)
                            isAskedField(consumer, fieldName) {
-         _holonStorage.allowConsumer(consumer, fieldName, allow);
+         _holonStorage.allowConsumer(msg.sender, consumer, fieldName, allow);
     }
 }

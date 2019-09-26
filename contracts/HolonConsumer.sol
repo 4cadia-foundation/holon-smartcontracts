@@ -4,10 +4,10 @@ import './Holon.sol';
 contract HolonConsumer is Holon {
     //modifiers
     modifier isAllowedField(address personaAddress, string memory fieldName) {
-        require(_holonStorage.isAllowedField(personaAddress, fieldName), "Field not allowed!");
+        require(_holonStorage.isAllowedField(msg.sender, personaAddress, fieldName), "Field not allowed!");
         _;
     }
-    
+
     //constructor
     constructor(address storageSmAddress) public {
         BuildHolonStorage(storageSmAddress);
@@ -18,7 +18,7 @@ contract HolonConsumer is Holon {
                              public
                              validPersona(personaAddress)
                              fieldExists(personaAddress, fieldName) {
-        _holonStorage.askPersonaField(personaAddress, fieldName);
+        _holonStorage.askPersonaField(msg.sender, personaAddress, fieldName);
     }
 
     //linkedin
