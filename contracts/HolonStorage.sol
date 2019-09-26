@@ -58,7 +58,7 @@ contract HolonStorage {
 
 
     //mappings
-    mapping (address => Persona) _personas;
+    mapping (address => Persona) public _personas;
     mapping (address => Validator)  _validators;
     mapping (address => PendingValidation[]) _validatorPendingValidation;
     //validator
@@ -125,23 +125,31 @@ contract HolonStorage {
         return validator.exists;
     }
 
-    function addPersona(string memory name, uint price) public {
-        FieldInfo memory nameField = FieldInfo(name, price, "Plain text", "Personal info", true, ValidationStatus.NotValidated);
-        Persona storage newPersona = _personas[msg.sender];
-        newPersona.fieldInfo["name"] = nameField;
+    function addPersona(string memory name, uint price, address personaAddress) public {
+        Persona storage newPersona = _personas[personaAddress];
+        newPersona.exists = true;
+
+        FieldInfo storage nameField = newPersona.fieldInfo["name"];
+        nameField.data = name;
+        nameField.price = price;
+        nameField.category = "Plain text";
+        nameField.subCategory = "Personal info";
+        nameField.exists = true;
+        nameField.lastStatus = ValidationStatus.NotValidated;
     }
 
-    function addPersonaField(string memory fieldName,
+    function addPersonaField(address personaAddress,
+                             string memory fieldName,
                              string memory fieldData,
                              uint fieldPrice,
                              string memory category,
                              string memory subCategory) public {
-        Persona storage persona = _personas[msg.sender];
+        Persona storage persona = _personas[personaAddress];
         persona.fieldInfo[fieldName] = FieldInfo(fieldData, fieldPrice, category, subCategory, true, ValidationStatus.NotValidated);
     }
 
-    function addValidator(ValidationCostStrategy _strategy, uint _price) public {
-        _validators[msg.sender] = Validator(_strategy, _price, true);
+    function addValidator(address validatorAddress, ValidationCostStrategy _strategy, uint _price) public {
+        _validators[validatorAddress] = Validator(_strategy, _price, true);
     }
 
     function getValidatorPrice(address validatorAddress) public view returns (uint) {
@@ -154,54 +162,60 @@ contract HolonStorage {
          return validator.strategy;
     }
 
-    function askToValidate(address validator,
+    function askToValidate(address persona,
+                           address validator,
                            string memory field,
                            string memory proofUrl) public {
-        uint length = _validatorPendingValidation[validator].push(PendingValidation(msg.sender, field, proofUrl));
-        setPersonaFieldPending(validator, msg.sender, field, true);
-        _validatorPersonaFieldPendingIndex[validator][msg.sender][field] = length - 1;
+        uint length = _validatorPendingValidation[validator].push(PendingValidation(persona, field, proofUrl));
+        setPersonaFieldPending(validator, persona, field, true);
+        _validatorPersonaFieldPendingIndex[validator][persona][field] = length - 1;
     }
 
-    function validate(address personaAddress, 
+    function validate(address validatorAddress,
+                      address personaAddress, 
                       string memory field, 
                       ValidationStatus status) 
                       public {
         _personas[personaAddress].fieldInfo[field].lastStatus = status;
-        setPersonaFieldPending(msg.sender, personaAddress, field, false);
-        uint fieldIndex = _validatorPersonaFieldPendingIndex[msg.sender][personaAddress][field];
-        removePendingValidation(msg.sender, fieldIndex);
+        setPersonaFieldPending(validatorAddress, personaAddress, field, false);
+        uint fieldIndex = _validatorPersonaFieldPendingIndex[validatorAddress][personaAddress][field];
+        removePendingValidation(validatorAddress, fieldIndex);
     }
 
-    function askPersonaField(address personaAddress, 
+    function askPersonaField(address consumerAddress,
+                             address personaAddress, 
                              string memory fieldName)
                              public {
-        uint length = _personaAskedFields[personaAddress].push(PersonaAskedFields(msg.sender, fieldName));
-        _personaAskedFieldIndex[personaAddress][msg.sender][fieldName] = length - 1;
-        _isPersonaFieldAsked[personaAddress][msg.sender][fieldName] = true;
+        uint length = _personaAskedFields[personaAddress].push(PersonaAskedFields(consumerAddress, fieldName));
+        _personaAskedFieldIndex[personaAddress][consumerAddress][fieldName] = length - 1;
+        _isPersonaFieldAsked[personaAddress][consumerAddress][fieldName] = true;
     }
 
-    function isAskedField(address consumer, 
+    function isAskedField(address personaAddress,
+                          address consumer, 
                           string memory fieldName) 
                           public view
                           returns (bool) {
-        return _isPersonaFieldAsked[msg.sender][consumer][fieldName]; 
+        return _isPersonaFieldAsked[personaAddress][consumer][fieldName]; 
     }
 
-    function allowConsumer(address consumer,
+    function allowConsumer(address personaAddress,
+                           address consumer,
                            string memory fieldName,
                            bool allow)
                            public {
 
-        _isPersonaFieldAllowed[msg.sender][consumer][fieldName] = allow;
-        _isPersonaFieldAsked[msg.sender][consumer][fieldName] = false;
-        uint fieldIndex = _personaAskedFieldIndex[msg.sender][consumer][fieldName];
-        removeAskedField(msg.sender, fieldIndex);
+        _isPersonaFieldAllowed[personaAddress][consumer][fieldName] = allow;
+        _isPersonaFieldAsked[personaAddress][consumer][fieldName] = false;
+        uint fieldIndex = _personaAskedFieldIndex[personaAddress][consumer][fieldName];
+        removeAskedField(personaAddress, fieldIndex);
     }
 
-    function isAllowedField(address personaAddress, 
+    function isAllowedField(address consumerAddress,
+                            address personaAddress, 
                             string memory fieldName)
                             public view
                             returns (bool) {
-        return _isPersonaFieldAllowed[personaAddress][msg.sender][fieldName];                              
+        return _isPersonaFieldAllowed[personaAddress][consumerAddress][fieldName];                              
     }
 }
