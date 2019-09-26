@@ -16,10 +16,10 @@ contract HolonValidator is Holon {
         require(_holonStorage.getPersonaFieldPending(msg.sender, personaAddress, fieldName), "Invalid permissions!");
         _;
     }
+    
     //constructor
     constructor(address storageSmAddress) public {
-        _owner = msg.sender;
-        _holonStorage = HolonStorage(storageSmAddress);
+        BuildHolonStorage(storageSmAddress);
     }
 
     //public functions
