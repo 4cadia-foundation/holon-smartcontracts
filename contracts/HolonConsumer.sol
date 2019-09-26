@@ -7,7 +7,11 @@ contract HolonConsumer is Holon {
         require(_holonStorage.isAllowedField(personaAddress, fieldName), "Field not allowed!");
         _;
     }
-
+    
+    //constructor
+    constructor(address storageSmAddress) public {
+        BuildHolonStorage(storageSmAddress);
+    }
 
     function askPersonaField(address personaAddress,
                              string memory fieldName)
