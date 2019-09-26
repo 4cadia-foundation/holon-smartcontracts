@@ -58,7 +58,7 @@ contract HolonStorage {
 
 
     //mappings
-    mapping (address => Persona) _personas;
+    mapping (address => Persona) public _personas;
     mapping (address => Validator)  _validators;
     mapping (address => PendingValidation[]) _validatorPendingValidation;
     //validator
@@ -125,10 +125,18 @@ contract HolonStorage {
         return validator.exists;
     }
 
-    function addPersona(string memory name, uint price) public {
-        FieldInfo memory nameField = FieldInfo(name, price, "Plain text", "Personal info", true, ValidationStatus.NotValidated);
+    function addPersona(string memory name, uint price) public returns (bool) {
         Persona storage newPersona = _personas[msg.sender];
-        newPersona.fieldInfo["name"] = nameField;
+        newPersona.exists = true;
+
+        FieldInfo storage nameField = newPersona.fieldInfo["name"];
+        nameField.data = name;
+        nameField.price = price;
+        nameField.category = "Plain text";
+        nameField.subCategory = "Personal info";
+        nameField.exists = true;
+        nameField.lastStatus = ValidationStatus.NotValidated;
+        return true;
     }
 
     function addPersonaField(string memory fieldName,
