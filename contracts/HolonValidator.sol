@@ -18,16 +18,9 @@ contract HolonValidator is Holon {
         _;
     }
 
-    modifier isPendingValidation(address personaAddress, string memory fieldName){
+    modifier isPendingValidation(address personaAddress, string memory fieldName) {
         require(_holonStorage.getPersonaFieldPending(msg.sender, personaAddress, fieldName), "Invalid permissions!");
         _;
-    }
-
-
-    //constructor
-    constructor(address storageSmAddress) public {
-        _owner = msg.sender;
-        _holonStorage = HolonStorage(storageSmAddress);
     }
 
 
@@ -57,6 +50,10 @@ contract HolonValidator is Holon {
         }
 
         _holonStorage.validate(personaAddress, fieldName, status);
+    }
+
+    function getPendingValidations() public view {
+        _holonStorage.getPendingValidations();
     }
 
 }

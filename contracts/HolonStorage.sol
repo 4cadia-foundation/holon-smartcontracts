@@ -1,4 +1,5 @@
 pragma solidity 0.5.11;
+pragma experimental ABIEncoderV2;
 
 contract HolonStorage {
 
@@ -36,13 +37,6 @@ contract HolonStorage {
         ValidationCostStrategy strategy;
         uint price;
         bool exists;
-    }
-
-    struct Stamp {
-        address validatorAddress;
-        ValidationStatus status;
-        uint date;
-        uint blockNumber;
     }
 
     struct PendingValidation {
@@ -167,6 +161,23 @@ contract HolonStorage {
         setPersonaFieldPending(msg.sender, personaAddress, field, false);
         uint fieldIndex = _validatorPersonaFieldPendingIndex[msg.sender][personaAddress][field];
         removePendingValidation(msg.sender, fieldIndex);
+    }
+
+    function getPendingValidations () public view returns (address[] memory, string[] memory, string[] memory) {
+        PendingValidation[] memory onlyPendingValidations = _validatorPendingValidation[msg.sender];
+        uint length = onlyPendingValidations.length;
+        address[] memory personasAddress = new address[](length);
+        string[] memory personasNames = new string[](length);
+        string[] memory fields = new string[](length);
+        for (uint pendingValidationsIndex = 0; pendingValidationsIndex < length; pendingValidationsIndex++) {
+            address personaAddress = onlyPendingValidations[pendingValidationsIndex].personaAddress;
+            Persona storage personaRequester = _personas[personaAddress];
+            string memory personaNameRequester = personaRequester.fieldInfo["name"].data;
+            personasAddress[pendingValidationsIndex] = personaAddress;
+            personasNames[pendingValidationsIndex] = personaNameRequester;
+            fields[pendingValidationsIndex] = onlyPendingValidations[pendingValidationsIndex].field;
+        }
+        return (personasAddress, personasNames, fields);
     }
 
     function askPersonaField(address personaAddress,

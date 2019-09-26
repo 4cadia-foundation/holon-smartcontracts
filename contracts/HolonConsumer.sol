@@ -9,31 +9,30 @@ contract HolonConsumer is Holon {
     }
 
 
-    function askPersonaField(address personaAddress, 
-                             string memory fieldName) 
+    function askPersonaField(address personaAddress,
+                             string memory fieldName)
+                             public
                              validPersona(personaAddress)
-                             fieldExists(personaAddress, fieldName)
-                             public {
+                             fieldExists(personaAddress, fieldName) {
         _holonStorage.askPersonaField(personaAddress, fieldName);
     }
 
     //linkedin
     function isPersonaFieldAllowed(address personaAddress)
+             public
              validPersona(personaAddress)
-             public 
              returns (bool) {
-
         //_holonStorage.isPersonaFieldAllowed
     }
-    
+
     function getPersonaField(address personaAddress,
                              string memory fieldName)
+                             public
                              validPersona(personaAddress)
                              isAllowedField(personaAddress, fieldName)
                              fieldExists(personaAddress, fieldName)
-                             public payable 
+                             payable
                              returns (string memory) {
-
         //apenas 1 vez
         //allowed false
     }
