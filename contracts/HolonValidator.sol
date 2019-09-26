@@ -69,4 +69,9 @@ contract HolonValidator is Holon {
         return (personasAddress, personasNames, fields);
     }
 
+    function getValidators() public view returns (address[] memory validatorsList) {
+        _holonStorage.getValidators();
+        return validatorsList;
+    }
+
 }

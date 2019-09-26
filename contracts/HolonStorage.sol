@@ -55,14 +55,19 @@ contract HolonStorage {
     mapping (address => Persona) _personas;
     mapping (address => Validator)  _validators;
     mapping (address => PendingValidation[]) _validatorPendingValidation;
+
     //validator
     mapping (address => mapping (address => mapping (string => bool))) _validatorHasPersonaFieldPending;
     mapping (address => mapping (address => mapping (string => uint))) _validatorPersonaFieldPendingIndex;
+    address[] public holonValidatorsList;
+
+
     //consumer
     mapping (address => PersonaAskedFields[]) _personaAskedFields;
     mapping (address => mapping (address => mapping (string => bool))) _isPersonaFieldAsked;
     mapping (address => mapping (address => mapping (string => uint))) _personaAskedFieldIndex;
     mapping (address => mapping (address => mapping (string => bool))) _isPersonaFieldAllowed;
+
 
 
     //private functions
@@ -133,6 +138,8 @@ contract HolonStorage {
 
     function addValidator(ValidationCostStrategy _strategy, uint _price) public {
         _validators[msg.sender] = Validator(_strategy, _price, true);
+        holonValidatorsList.push(msg.sender);
+
     }
 
     function getValidatorPrice(address validatorAddress) public view returns (uint) {
@@ -143,6 +150,11 @@ contract HolonStorage {
     function getValidatorCostStrategy(address validatorAddress) public view returns (ValidationCostStrategy) {
          Validator storage validator = _validators[validatorAddress];
          return validator.strategy;
+    }
+
+    function getValidators() public view returns (address[] memory validatorsList) {
+        validatorsList = holonValidatorsList;
+        return validatorsList;
     }
 
     function askToValidate(address validator,
