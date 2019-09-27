@@ -1,4 +1,5 @@
 pragma solidity 0.5.11;
+pragma experimental ABIEncoderV2;
 import './Holon.sol';
 
 contract HolonValidator is Holon {
@@ -6,21 +7,30 @@ contract HolonValidator is Holon {
     //private fields
     uint _validatorStake;
 
+
     //modifiers
     modifier hasValidStake {
         require(msg.value >= _validatorStake, "Sent stake less than minimum stake accepted");
         _;
     }
-    
-    modifier isPendingValidation(address personaAddress, string memory fieldName){
-        require(_holonStorage.getPersonaFieldPending(msg.sender, personaAddress, fieldName), "Invalid permissions!");
+
+    modifier fieldExists(address persona, string memory fieldName) {
+        require(_holonStorage.personaFieldExists(msg.sender, fieldName), "Field not exists!");
         _;
     }
-    
+
+    modifier isPendingValidation(address personaAddress, string memory fieldName) {
+        require(_holonStorage.getPersonaFieldPending(msg.sender, personaAddress, fieldName), "Invalid permissions!");
+        _;
+
+    }
+
+
     //constructor
     constructor(address storageSmAddress) public {
         BuildHolonStorage(storageSmAddress);
     }
+
 
     //public functions
     function setStake(uint stake) public isOwner {
@@ -31,10 +41,10 @@ contract HolonValidator is Holon {
         _holonStorage.addValidator(msg.sender, strategy, price);
     }
 
-    function validate(address personaAddress, 
-                      string memory fieldName, 
-                      HolonStorage.ValidationStatus status) 
-                      public payable 
+    function validate(address personaAddress,
+                      string memory fieldName,
+                      HolonStorage.ValidationStatus status)
+                      public payable
                       isValidator
                       validPersona(personaAddress)
                       fieldExists(personaAddress, fieldName)
@@ -49,4 +59,19 @@ contract HolonValidator is Holon {
 
         _holonStorage.validate(msg.sender, personaAddress, fieldName, status);
     }
+
+    function getPendingValidations() public
+                                     view
+                                     returns (address[] memory personasAddress,
+                                     string[] memory personasNames,
+                                     string[] memory fields) {
+        _holonStorage.getPendingValidations();
+        return (personasAddress, personasNames, fields);
+    }
+
+    function getValidators() public view returns (address[] memory validatorsList) {
+        _holonStorage.getValidators();
+        return validatorsList;
+    }
+
 }
