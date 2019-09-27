@@ -237,4 +237,23 @@ contract HolonStorage {
                             returns (bool) {
         return _isPersonaFieldAllowed[personaAddress][consumerAddress][fieldName];
     }
+
+    function getPersonaField(address consumerAddress,
+                             address personaAddress,
+                             string memory fieldName)
+                             public
+                             payable
+                             returns (string memory) {
+        Persona storage persona = _personas[personaAddress];
+        _isPersonaFieldAllowed[personaAddress][consumerAddress][fieldName] = false;
+        return persona.fieldInfo[fieldName].data;
+    }
+
+    function getPersonaFieldPrice(address personaAddress,
+                                  string memory fieldName)
+                                  public view 
+                                  returns (uint) {
+        Persona storage persona = _personas[personaAddress];
+        return persona.fieldInfo[fieldName].price;
+    }
 }
