@@ -6,8 +6,8 @@ const HolonConsumer = artifacts.require("HolonConsumer");
 
 module.exports = async deployer => {
   await deployer.deploy(HolonStorage);
-  await deployer.deploy(Holon, HolonStorage.address);
-  await deployer.deploy(HolonPersona);
-  await deployer.deploy(HolonValidator);
-  await deployer.deploy(HolonConsumer);
+  await deployer.deploy(Holon);
+  await deployer.deploy(HolonPersona, HolonStorage.address);
+  await deployer.deploy(HolonValidator, HolonStorage.address);
+  await deployer.deploy(HolonConsumer, HolonStorage.address);
 };
