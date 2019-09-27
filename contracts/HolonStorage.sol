@@ -52,14 +52,14 @@ contract HolonStorage {
 
 
     //mappings
-    mapping (address => Persona) public _personas;
-    mapping (address => Validator)  _validators;
+    mapping (address => Persona) _personas;
+    mapping (address => Validator) _validators;
     mapping (address => PendingValidation[]) _validatorPendingValidation;
 
     //validator
     mapping (address => mapping (address => mapping (string => bool))) _validatorHasPersonaFieldPending;
     mapping (address => mapping (address => mapping (string => uint))) _validatorPersonaFieldPendingIndex;
-    address[] public holonValidatorsList;
+    address[] public _holonValidatorsList;
 
 
     //consumer
@@ -146,7 +146,7 @@ contract HolonStorage {
 
     function addValidator(address validatorAddress, ValidationCostStrategy _strategy, uint _price) public {
         _validators[validatorAddress] = Validator(_strategy, _price, true);
-        holonValidatorsList.push(msg.sender);
+        _holonValidatorsList.push(validatorAddress);
     }
 
     function getValidatorPrice(address validatorAddress) public view returns (uint) {
@@ -159,9 +159,23 @@ contract HolonStorage {
          return validator.strategy;
     }
 
-    function getValidators() public view returns (address[] memory validatorsList) {
-        validatorsList = holonValidatorsList;
-        return validatorsList;
+    function getValidators() public 
+                             view
+                             returns (address[] memory,
+                             string[] memory) {
+         uint size = _holonValidatorsList.length;
+         address[] memory validatorAddress = new address[](size);
+         string[] memory validatorName = new string[](size);
+
+        for (uint validatorIndex = 0; validatorIndex < size; validatorIndex++) {
+            address vAddress = _holonValidatorsList[validatorIndex];
+            Persona storage validator = _personas[vAddress];
+            string memory nameField =  validator.fieldInfo["name"].data;
+
+            validatorAddress[validatorIndex] = vAddress;
+            validatorName[validatorIndex] = nameField;
+        }
+        return (validatorAddress, validatorName);
     }
 
     function askToValidate(address persona,
@@ -184,12 +198,18 @@ contract HolonStorage {
         removePendingValidation(validatorAddress, fieldIndex);
     }
 
-    function getPendingValidations () public view returns (address[] memory, string[] memory, string[] memory) {
-        PendingValidation[] memory onlyPendingValidations = _validatorPendingValidation[msg.sender];
+    function getPendingValidations (address validatorAddress) 
+                                    public view 
+                                    returns (address[] memory, 
+                                    string[] memory, 
+                                    string[] memory) {
+
+        PendingValidation[] memory onlyPendingValidations = _validatorPendingValidation[validatorAddress];
         uint length = onlyPendingValidations.length;
         address[] memory personasAddress = new address[](length);
         string[] memory personasNames = new string[](length);
         string[] memory fields = new string[](length);
+
         for (uint pendingValidationsIndex = 0; pendingValidationsIndex < length; pendingValidationsIndex++) {
             address personaAddress = onlyPendingValidations[pendingValidationsIndex].personaAddress;
             Persona storage personaRequester = _personas[personaAddress];
@@ -236,5 +256,24 @@ contract HolonStorage {
                             public view
                             returns (bool) {
         return _isPersonaFieldAllowed[personaAddress][consumerAddress][fieldName];
+    }
+
+    function getPersonaField(address consumerAddress,
+                             address personaAddress,
+                             string memory fieldName)
+                             public
+                             payable
+                             returns (string memory) {
+        Persona storage persona = _personas[personaAddress];
+        _isPersonaFieldAllowed[personaAddress][consumerAddress][fieldName] = false;
+        return persona.fieldInfo[fieldName].data;
+    }
+
+    function getPersonaFieldPrice(address personaAddress,
+                                  string memory fieldName)
+                                  public view 
+                                  returns (uint) {
+        Persona storage persona = _personas[personaAddress];
+        return persona.fieldInfo[fieldName].price;
     }
 }
