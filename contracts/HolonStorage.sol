@@ -52,8 +52,8 @@ contract HolonStorage {
 
 
     //mappings
-    mapping (address => Persona) public _personas;
-    mapping (address => Validator)  _validators;
+    mapping (address => Persona) _personas;
+    mapping (address => Validator) _validators;
     mapping (address => PendingValidation[]) _validatorPendingValidation;
 
     //validator
@@ -146,7 +146,7 @@ contract HolonStorage {
 
     function addValidator(address validatorAddress, ValidationCostStrategy _strategy, uint _price) public {
         _validators[validatorAddress] = Validator(_strategy, _price, true);
-        _holonValidatorsList.push(msg.sender);
+        _holonValidatorsList.push(validatorAddress);
     }
 
     function getValidatorPrice(address validatorAddress) public view returns (uint) {
@@ -160,16 +160,20 @@ contract HolonStorage {
     }
 
     function getValidators() public 
-                             view 
-                             returns (address[] memory validatorAddress,
-                             string[] memory validatorName) {
-        
-        for (uint validatorIndex = 0; validatorIndex < _holonValidatorsList.length; validatorIndex++) {
+                             view
+                             returns (address[] memory,
+                             string[] memory) {
+         uint size = _holonValidatorsList.length;
+         address[] memory validatorAddress = new address[](size);
+         string[] memory validatorName = new string[](size);
+
+        for (uint validatorIndex = 0; validatorIndex < size; validatorIndex++) {
             address vAddress = _holonValidatorsList[validatorIndex];
             Persona storage validator = _personas[vAddress];
+            string memory nameField =  validator.fieldInfo["name"].data;
 
             validatorAddress[validatorIndex] = vAddress;
-            validatorName[validatorIndex] = validator.fieldInfo["name"].data;
+            validatorName[validatorIndex] = nameField;
         }
         return (validatorAddress, validatorName);
     }

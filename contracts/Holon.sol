@@ -9,7 +9,7 @@ contract Holon {
 
     //constructor
     constructor() public {
-        _owner == msg.sender;
+        _owner = msg.sender;
     }
 
     //modifiers
