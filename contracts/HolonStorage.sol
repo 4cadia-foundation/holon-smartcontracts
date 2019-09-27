@@ -59,7 +59,7 @@ contract HolonStorage {
     //validator
     mapping (address => mapping (address => mapping (string => bool))) _validatorHasPersonaFieldPending;
     mapping (address => mapping (address => mapping (string => uint))) _validatorPersonaFieldPendingIndex;
-    address[] public holonValidatorsList;
+    address[] public _holonValidatorsList;
 
 
     //consumer
@@ -146,7 +146,7 @@ contract HolonStorage {
 
     function addValidator(address validatorAddress, ValidationCostStrategy _strategy, uint _price) public {
         _validators[validatorAddress] = Validator(_strategy, _price, true);
-        holonValidatorsList.push(msg.sender);
+        _holonValidatorsList.push(msg.sender);
     }
 
     function getValidatorPrice(address validatorAddress) public view returns (uint) {
@@ -159,9 +159,19 @@ contract HolonStorage {
          return validator.strategy;
     }
 
-    function getValidators() public view returns (address[] memory validatorsList) {
-        validatorsList = holonValidatorsList;
-        return validatorsList;
+    function getValidators() public 
+                             view 
+                             returns (address[] memory validatorAddress,
+                             string[] memory validatorName) {
+        
+        for (uint validatorIndex = 0; validatorIndex < _holonValidatorsList.length; validatorIndex++) {
+            address vAddress = _holonValidatorsList[validatorIndex];
+            Persona storage validator = _personas[vAddress];
+
+            validatorAddress[validatorIndex] = vAddress;
+            validatorName[validatorIndex] = validator.fieldInfo["name"].data;
+        }
+        return (validatorAddress, validatorName);
     }
 
     function askToValidate(address persona,
@@ -184,12 +194,18 @@ contract HolonStorage {
         removePendingValidation(validatorAddress, fieldIndex);
     }
 
-    function getPendingValidations () public view returns (address[] memory, string[] memory, string[] memory) {
-        PendingValidation[] memory onlyPendingValidations = _validatorPendingValidation[msg.sender];
+    function getPendingValidations (address validatorAddress) 
+                                    public view 
+                                    returns (address[] memory, 
+                                    string[] memory, 
+                                    string[] memory) {
+
+        PendingValidation[] memory onlyPendingValidations = _validatorPendingValidation[validatorAddress];
         uint length = onlyPendingValidations.length;
         address[] memory personasAddress = new address[](length);
         string[] memory personasNames = new string[](length);
         string[] memory fields = new string[](length);
+
         for (uint pendingValidationsIndex = 0; pendingValidationsIndex < length; pendingValidationsIndex++) {
             address personaAddress = onlyPendingValidations[pendingValidationsIndex].personaAddress;
             Persona storage personaRequester = _personas[personaAddress];
