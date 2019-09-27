@@ -31,7 +31,7 @@ contract Holon {
         require(!_holonStorage.isValidator(msg.sender), "Validator already exists!");
         _;
     }
-    
+
     modifier isValidator {
         require(_holonStorage.isValidator(msg.sender), "Validator not exists!");
         _;
