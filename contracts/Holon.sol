@@ -22,6 +22,7 @@ contract Holon {
         require(_holonStorage.isPersona(personaAddress), "Persona not exists!");
         _;
     }
+
     modifier isNotPersona {
         require(!_holonStorage.isPersona(msg.sender), "Persona already added!");
         _;
@@ -52,8 +53,8 @@ contract Holon {
         _;
     }
 
+    //public functions
     function BuildHolonStorage(address storageSmAddress) public {
-        //todo: ver um jeito melhor se possivel
         _holonStorage = HolonStorage(storageSmAddress);
     }
 }

@@ -1,8 +1,6 @@
 pragma solidity 0.5.11;
 import './Holon.sol';
 
-//todo: validar a necessidade de utilizacao do fieldExists (remover por segurança?) 
-
 contract HolonConsumer is Holon {
     //modifiers
     modifier isAllowedField(address personaAddress, string memory fieldName) {
