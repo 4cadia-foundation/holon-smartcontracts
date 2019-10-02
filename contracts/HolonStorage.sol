@@ -159,7 +159,7 @@ contract HolonStorage {
          return validator.strategy;
     }
 
-    function getValidators() public 
+    function getValidators() public
                              view
                              returns (address[] memory,
                              string[] memory) {
@@ -170,7 +170,7 @@ contract HolonStorage {
         for (uint validatorIndex = 0; validatorIndex < size; validatorIndex++) {
             address vAddress = _holonValidatorsList[validatorIndex];
             Persona storage validator = _personas[vAddress];
-            string memory nameField =  validator.fieldInfo["name"].data;
+            string memory nameField = validator.fieldInfo["name"].data;
 
             validatorAddress[validatorIndex] = vAddress;
             validatorName[validatorIndex] = nameField;
@@ -198,10 +198,10 @@ contract HolonStorage {
         removePendingValidation(validatorAddress, fieldIndex);
     }
 
-    function getPendingValidations (address validatorAddress) 
-                                    public view 
-                                    returns (address[] memory, 
-                                    string[] memory, 
+    function getPendingValidations (address validatorAddress)
+                                    public view
+                                    returns (address[] memory,
+                                    string[] memory,
                                     string[] memory) {
 
         PendingValidation[] memory onlyPendingValidations = _validatorPendingValidation[validatorAddress];
@@ -271,7 +271,7 @@ contract HolonStorage {
 
     function getPersonaFieldPrice(address personaAddress,
                                   string memory fieldName)
-                                  public view 
+                                  public view
                                   returns (uint) {
         Persona storage persona = _personas[personaAddress];
         return persona.fieldInfo[fieldName].price;
