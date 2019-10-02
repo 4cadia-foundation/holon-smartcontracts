@@ -21,6 +21,7 @@ contract HolonConsumer is Holon {
         _holonStorage.askPersonaField(msg.sender, personaAddress, fieldName);
     }
 
+    //change function name (is the same function to allow and decline the consumer requirer)
     function isPersonaFieldAllowed(address personaAddress,
                                    string memory fieldName)
                                    public view

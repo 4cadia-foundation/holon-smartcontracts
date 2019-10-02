@@ -12,7 +12,7 @@ contract('HolonConsumer', (accounts) => {
     let personaAddress = accounts[1]
     let personaAddress2 = accounts[4]
     let consumerAddress =  accounts[2]
-    let consumerAddress2 = accounts[3]
+    let otherConsumerAddress = accounts[3]
 
     beforeEach('setup for each test', async () => {
         holonStorage = await HolonStorageSC.deployed({from: owner})
@@ -25,27 +25,54 @@ contract('HolonConsumer', (accounts) => {
     })
 
     describe('askPersonaField', () => {
-
-        it('Ask to persona if she wants share your data with consumer', async() => {
-            await holonStorage.addPersona('Vic', 0, personaAddress)
+        it('Ask to Persona if she wants share your data with consumer', async() => {
+            await holonStorage.addPersona('Olivia Watson', 0, personaAddress)
             await holonStorage.addPersona('Atlas Quantum', 0, consumerAddress)
             const askPersonaField = await holonConsumer.askPersonaField(personaAddress, 'name', {from: consumerAddress}) 
             truffleAssert.passes(askPersonaField)
         })
         
         it('Fail when field not exist', async() => {
-            await holonStorage.addPersona('Vic', 0, personaAddress)
+            await holonStorage.addPersona('Olivia Watson', 0, personaAddress)
             await holonStorage.addPersona('Atlas Quantum', 0, consumerAddress)
             const personaFieldExists = await holonStorage.personaFieldExists(personaAddress, 'CPF')
             assert.equal(personaFieldExists, false)
         })
         
-        it('Fail when persona not exist', async() => {
+        it('Fail when Persona not exist', async() => {
             await holonStorage.addPersona('Atlas Quantum', 0, consumerAddress)
             const isPersona = await holonStorage.isPersona(personaAddress2)
             assert.equal(isPersona, false)
+        })   
+    })
+
+    describe('isPersonaFieldAllowed', () => {
+        it('Passes when Persona allows the consumer access to his information', async() => {
+            await holonStorage.addPersona('Olivia Watson', 0, personaAddress)
+            await holonStorage.addPersona('Atlas Quantum', 0, consumerAddress)
+            await holonConsumer.askPersonaField(personaAddress, 'name', {from: consumerAddress})
+            await holonStorage.allowConsumer(personaAddress, consumerAddress, "name", true)
+            const isPersonaFieldAllowed = await holonConsumer.isPersonaFieldAllowed(personaAddress, 'name', {from: consumerAddress}) 
+            assert.equal(isPersonaFieldAllowed, true)
         })
-        
+
+        it('Fails when Persona declines the consumer access to his information', async() => {
+            await holonStorage.addPersona('Olivia Watson', 0, personaAddress)
+            await holonStorage.addPersona('Atlas Quantum', 0, consumerAddress)
+            await holonConsumer.askPersonaField(personaAddress, 'name', {from: consumerAddress})
+            await holonStorage.allowConsumer(personaAddress, consumerAddress, "name", false)
+            const isPersonaFieldAllowed = await holonConsumer.isPersonaFieldAllowed(personaAddress, 'name', {from: consumerAddress}) 
+            assert.equal(isPersonaFieldAllowed, false)
+        })
+
+        it('Fails when a different address try access the Persona info', async() => {
+            await holonStorage.addPersona('Olivia Watson', 0, personaAddress)
+            await holonStorage.addPersona('Atlas Quantum', 0, consumerAddress)
+            await holonConsumer.askPersonaField(personaAddress, 'name', {from: consumerAddress})
+            await holonStorage.allowConsumer(personaAddress, consumerAddress, "name", true)
+            const isPersonaFieldAllowed = await holonConsumer.isPersonaFieldAllowed(personaAddress, 'name', {from: otherConsumerAddress}) 
+            assert.equal(isPersonaFieldAllowed, false)
+        })
     })
 })
 
