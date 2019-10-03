@@ -37,11 +37,11 @@ contract HolonValidator is Holon {
         _validatorStake = stake;
     }
 
-    function addValidator(HolonStorage.ValidationCostStrategy strategy, 
-                          uint price) 
+    function addValidator(HolonStorage.ValidationCostStrategy strategy,
+                          uint price)
                           public payable
-                          isNotValidator 
-                          hasValidStake 
+                          isNotValidator
+                          hasValidStake
                           isPersona {
         _holonStorage.addValidator(msg.sender, strategy, price);
     }
@@ -70,15 +70,15 @@ contract HolonValidator is Holon {
                                      returns (address[] memory personasAddress,
                                      string[] memory personasNames,
                                      string[] memory fields) {
-        
+
         return _holonStorage.getPendingValidations(msg.sender);
     }
 
-    function getValidators() public 
-                             view 
+    function getValidators() public
+                             view
                              returns (address[] memory vAddressList,
                              string[] memory vNameList) {
-        (vAddressList, vNameList) = _holonStorage.getValidators();                                 
+        (vAddressList, vNameList) = _holonStorage.getValidators();
         return (vAddressList, vNameList);
     }
 }
