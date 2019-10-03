@@ -38,4 +38,12 @@
     
         })
     })
+
+    describe('AddPersonaField', () => {
+    
+        it('Should add info', async () => {
+            const addPersonaField = await holonPersona.addPersonaField('Vic', '8172812256', 0, 'Plain text', 'Personal info')
+            truffleAssertions.passes(addPersonaField);
+        })
+    })
  })
