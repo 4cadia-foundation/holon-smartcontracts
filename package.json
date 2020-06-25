@@ -17,6 +17,8 @@
   "license": "ISC",
   "homepage": "https://bitbucket.org/janusplatform/holon.contracts#readme",
   "dependencies": {
-    "truffle-assertions": "^0.9.1"
+    "dotenv": "^8.2.0",
+    "truffle-assertions": "^0.9.1",
+    "truffle-hdwallet-provider": "^1.0.17"
   }
 }
